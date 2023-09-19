@@ -1,5 +1,5 @@
 name: stdweb
-description: A sample command-line application.
+description: A Web-standard APIs library for Dart
 version: 0.0.0
 repository: https://github.com/medz/stdweb
 
