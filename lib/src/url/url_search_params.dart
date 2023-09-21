@@ -1,3 +1,5 @@
+import 'package:stdweb/src/js_compatibility/encode_uri.dart';
+
 /// The `URLSearchParams` interface defines utility methods to work
 /// with the query string of a URL.
 ///
@@ -205,4 +207,14 @@ class _URLSearchParams implements URLSearchParams {
 
   @override
   int get size => raw.values.length;
+
+  @override
+  String toString() {
+    final params = <String>[];
+    for (final (name, value) in entries()) {
+      params.add('${encodeURIComponent(name)}=${encodeURIComponent(value)}');
+    }
+
+    return params.join('&');
+  }
 }
