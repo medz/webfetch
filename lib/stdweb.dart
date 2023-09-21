@@ -1,3 +1,5 @@
 library stdweb;
 
-export 'url.dart';
+export 'src/json.dart';
+export 'src/url/url.dart';
+export 'src/url/url_search_params.dart';

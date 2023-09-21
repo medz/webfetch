@@ -1,6 +1,3 @@
-import 'package:stdweb/url.dart';
-
-void main(List<String> args) {
-  final url = URL('?x=1', 'https://example.com/hahah');
-  print(url.toString());
+void main() {
+  print(Uri.parse('https://a.com/?行=1&x=%20').queryParametersAll);
 }
