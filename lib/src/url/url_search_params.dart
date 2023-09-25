@@ -1,4 +1,4 @@
-import 'package:stdweb/src/js_compatibility/encode_uri.dart';
+import '../js_compatibility/encode_uri.dart';
 
 /// The `URLSearchParams` interface defines utility methods to work
 /// with the query string of a URL.
