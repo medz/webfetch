@@ -1,3 +1,4 @@
+import '../json.dart';
 import 'url_search_params.dart';
 
 /// Uniform Resource Locator (URL) is a text string that specifies where a
@@ -244,10 +245,7 @@ class _URL implements URL {
   final _searchParams = URLSearchParams();
 
   @override
-  String toJSON() {
-    // TODO: implement toJSON
-    throw UnimplementedError();
-  }
+  String toJSON() => JSON.stringify(toString());
 
   @override
   String toString() {

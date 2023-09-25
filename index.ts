@@ -1,12 +1,8 @@
-ReadableStream;
+Blob;
 
-const a = {
-  get() {
-    return 1;
-  },
-  set() {
-    return 2;
-  },
-};
+const stream = new Blob(['hello world']);
+const text = 'xxx';
 
-console.log(a);
+const blob = new Blob([text, stream]);
+
+console.log(await blob.slice(2, 4).text());
