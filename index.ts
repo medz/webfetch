@@ -1,8 +1,8 @@
 Blob;
 
-const stream = new Blob(['hello world']);
-const text = 'xxx';
+const a = new Blob(['你好']);
+const b = new Blob(['世界']);
 
-const blob = new Blob([text, stream]);
+const c = new Blob([a, b]);
 
-console.log(await blob.slice(2, 4).text());
+// console.log(await c.slice(0, 1).text()); // 6

@@ -12,6 +12,7 @@ part '_internal/blob.dart';
 /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Blob)
 class Blob {
   final Stream<Uint8List> _stream;
+  Uint8List? _buffer;
 
   /// Returns a newly created Blob object which contains a concatenation of all
   /// of the data in the array passed into the constructor.
@@ -35,7 +36,7 @@ class Blob {
   ///
   /// **Note**: Expose this method to facilitate the use of more subclasses
   /// based on [Blob] implementation.
-  const Blob.from(
+  Blob.from(
     Stream<Uint8List> stream, {
     required this.size,
     String? type,
@@ -58,11 +59,16 @@ class Blob {
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Blob/arrayBuffer)
   Future<Uint8List> arrayBuffer() async {
-    final completer = Completer<Uint8List>();
-    final chunks = Uint8List(size);
+    if (_buffer is Uint8List) return _buffer!;
 
-    await stream().forEach(chunks.addAll);
-    completer.complete(chunks);
+    final completer = Completer<Uint8List>();
+    final chunks = <Uint8List>[];
+
+    await _stream.forEach(chunks.add);
+
+    _buffer =
+        Uint8List.fromList(chunks.expand((e) => e).toList(growable: false));
+    completer.complete(_buffer);
 
     return completer.future;
   }
@@ -80,13 +86,14 @@ class Blob {
   /// Returns a [Stream] that can be used to read the contents of the Blob.
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Blob/stream)
-  Stream<Uint8List> stream() => _stream;
+  Stream<Uint8List> stream() => Stream.fromFuture(arrayBuffer());
 
   /// Returns a promise that resolves with a string containing the entire
   /// contents of the Blob interpreted as UTF-8 text.
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Blob/text)
-  Future<String> text() => utf8.decoder.bind(stream()).join();
+  Future<String> text() async =>
+      utf8.decode(await arrayBuffer(), allowMalformed: true);
 }
 
 enum EndingType {

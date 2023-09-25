@@ -17,20 +17,23 @@ extension SliceUint8ListStream on Stream<Uint8List> {
     final startOffset = resolveSliceRange(start ?? 0, min: -size, max: size);
     final endOffset = resolveSliceRange(end ?? size, min: -size, max: size);
 
-    assert(startOffset <= endOffset,
-        'The value of start must be less than or equal to end');
+    if (startOffset >= endOffset || startOffset >= size || endOffset == 0) {
+      return const SizedUint8ListStreamWrapper(Stream.empty(), 0);
+    }
 
     Stream<Uint8List> sliceStream() async* {
       int currentOffset = 0;
       await for (final chunk in this) {
         if (currentOffset >= endOffset) break;
-        if (currentOffset + chunk.length <= startOffset) continue;
+        if (currentOffset + chunk.lengthInBytes <= startOffset) continue;
 
-        final chunkEndOffset = currentOffset + chunk.length > endOffset
+        final chunkStartOffset =
+            currentOffset < startOffset ? startOffset - currentOffset : 0;
+        final chunkEndOffset = currentOffset + chunk.lengthInBytes > endOffset
             ? endOffset - currentOffset
             : null;
 
-        yield chunk.sublist(0, chunkEndOffset);
+        yield chunk.sublist(chunkStartOffset, chunkEndOffset);
         currentOffset += chunk.length;
       }
     }
@@ -40,7 +43,7 @@ extension SliceUint8ListStream on Stream<Uint8List> {
     return SizedUint8ListStreamWrapper(sliceStream(), sliceSize);
   }
 
-  static resolveSliceRange(
+  static int resolveSliceRange(
     int value, {
     required int min,
     required int max,
