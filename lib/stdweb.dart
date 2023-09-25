@@ -1,14 +1,19 @@
 library stdweb;
 
-// Blob
-export 'src/blob/blob.dart';
+// Fetch API
+export 'src/fetch/headers.dart';
 
-// HTTP
-export 'src/http/headers.dart';
+// File API
+export 'src/file/blob.dart';
+export 'src/file/file.dart';
 
-// URL
+// URL API
 export 'src/url/url.dart';
 export 'src/url/url_search_params.dart';
 
-// JSON
-export 'src/json.dart';
+// Standard built-in objects
+export 'src/js_compatibility/decode_uri.dart';
+export 'src/js_compatibility/encode_uri.dart';
+export 'src/js_compatibility/error.dart';
+export 'src/js_compatibility/json.dart';
+export 'src/js_compatibility/uri_error.dart';

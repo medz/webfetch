@@ -1,4 +1,4 @@
-import '../json.dart';
+import '../js_compatibility/json.dart';
 import 'url_search_params.dart';
 
 /// Uniform Resource Locator (URL) is a text string that specifies where a
