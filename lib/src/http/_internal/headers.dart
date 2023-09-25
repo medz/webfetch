@@ -1,6 +1,6 @@
 part of '../headers.dart';
 
-class _Headers implements Headers {
+final class _Headers implements Headers {
   final _store = CaseInsensitiveMap<Iterable<String>>();
 
   _Headers._();

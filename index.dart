@@ -10,5 +10,5 @@ void main(List<String> args) async {
   print(c.size);
   print(await c.text());
   print(await c.text());
-  print(await c.slice(-3, null).text());
+  print(await c.slice(-3).text());
 }

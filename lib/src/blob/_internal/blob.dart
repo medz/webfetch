@@ -1,6 +1,6 @@
 part of '../blob.dart';
 
-class _Blob extends Blob {
+final class _Blob extends Blob {
   _Blob._(super.stream, {required super.size, super.type}) : super.from();
 
   factory _Blob(

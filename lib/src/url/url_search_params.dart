@@ -1,4 +1,9 @@
+import 'package:collection/collection.dart';
+
+import '../_internal/case_insensitive_map.dart';
 import '../js_compatibility/encode_uri.dart';
+
+part '_internal/url_search_params.dart';
 
 /// The `URLSearchParams` interface defines utility methods to work
 /// with the query string of a URL.
@@ -48,13 +53,15 @@ abstract interface class URLSearchParams {
   ///
   /// **Note**: In Dart language, Iterable's behavior is roughly similar
   /// to JS Iteration protocols, for ease of use! Therefore, use Iterable.
-  Iterable<(String, String)> entries();
+  Iterable<Iterable<String>> entries();
 
   /// Allows iteration through all values contained in this object via a
   /// callback function.
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/forEach)
-  void forEach(void Function(String value, String name) fn);
+  void forEach(
+      void Function(String value, String name, URLSearchParams searchParams)
+          fn);
 
   /// Returns the first value associated with the given search parameter.
   ///
@@ -109,112 +116,4 @@ abstract interface class URLSearchParams {
   /// **Note**: In Dart language, Iterable's behavior is roughly similar
   /// to JS Iteration protocols, for ease of use! Therefore, use Iterable.
   Iterable<String> values();
-}
-
-/// The `URLSearchParams` implementation.
-class _URLSearchParams implements URLSearchParams {
-  final Map<String, List<String>> raw = {};
-
-  _URLSearchParams.empty();
-
-  _URLSearchParams.fromInstance(URLSearchParams init) {
-    for (final (value, key) in init.entries()) {
-      append(key, value);
-    }
-  }
-
-  _URLSearchParams.fromUri(Uri init) {
-    raw.addAll(init.queryParametersAll);
-  }
-
-  _URLSearchParams.fromString(String init) {
-    final search = init.startsWith('?') ? init : '?$init';
-    final params = Uri.parse(search).queryParametersAll;
-
-    raw.addAll(params);
-  }
-
-  _URLSearchParams.fromIterable(Iterable<String> init)
-      : this.fromString(init.join('&'));
-
-  _URLSearchParams.fromMap(Map<String, String> init)
-      : this.fromIterable(init.entries.map((e) => '${e.key}=${e.value}'));
-
-  _URLSearchParams.fromTuple(Iterable<(String, String)> init)
-      : this.fromIterable(init.map((e) => '${e.$1}=${e.$2}'));
-
-  factory _URLSearchParams([dynamic init]) {
-    return switch (init) {
-      final URLSearchParams init => _URLSearchParams.fromInstance(init),
-      final Uri init => _URLSearchParams.fromUri(init),
-      final String init => _URLSearchParams.fromString(init),
-      final Iterable<String> init => _URLSearchParams.fromIterable(init),
-      final Map<String, String> init => _URLSearchParams.fromMap(init),
-      final Iterable<(String, String)> init => _URLSearchParams.fromTuple(init),
-      _ => _URLSearchParams.empty(),
-    };
-  }
-
-  @override
-  void append(String name, String value) =>
-      raw.putIfAbsent(name, () => []).add(value);
-
-  @override
-  void delete(String name, [String? value]) =>
-      value == null ? raw.remove(name) : raw[name]?.remove(value);
-
-  @override
-  String? get(String name) => getAll(name).firstOrNull;
-
-  @override
-  Iterable<String> getAll(String name) => raw[name] ?? const [];
-
-  @override
-  bool has(String name, [String? value]) =>
-      value == null ? raw.containsKey(name) : getAll(name).contains(value);
-
-  @override
-  void set(String name, String value) => raw[name] = [value];
-
-  @override
-  Iterable<(String, String)> entries() sync* {
-    for (final name in raw.keys) {
-      yield* getAll(name).map((value) => (name, value));
-    }
-  }
-
-  @override
-  Iterable<String> keys() => entries().map((e) => e.$1);
-
-  @override
-  Iterable<String> values() => entries().map((e) => e.$2);
-
-  @override
-  void forEach(void Function(String value, String name) fn) {
-    for (final (name, value) in entries()) {
-      fn(value, name);
-    }
-  }
-
-  @override
-  void sort() {
-    final sortedKeys = raw.keys.toList()..sort();
-    final entries = sortedKeys.map((key) => MapEntry(key, raw[key]!));
-
-    raw.clear();
-    raw.addEntries(entries);
-  }
-
-  @override
-  int get size => raw.values.length;
-
-  @override
-  String toString() {
-    final params = <String>[];
-    for (final (name, value) in entries()) {
-      params.add('${encodeURIComponent(name)}=${encodeURIComponent(value)}');
-    }
-
-    return params.join('&');
-  }
 }

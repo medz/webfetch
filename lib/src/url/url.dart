@@ -84,7 +84,7 @@ abstract interface class URL {
   String toJSON();
 }
 
-class _URL implements URL {
+final class _URL implements URL {
   /// Internal, Parses a URL string and returns a `Uri` object.
   static Uri _parse(Object url) => switch (url) {
         _URL(uri: final uri) => uri,
