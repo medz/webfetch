@@ -1,6 +1,7 @@
 library stdweb;
 
 // Fetch API
+export 'src/fetch/formdata.dart';
 export 'src/fetch/headers.dart';
 
 // File API
