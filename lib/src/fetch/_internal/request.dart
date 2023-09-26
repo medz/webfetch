@@ -1,8 +1,15 @@
 part of '../request.dart';
 
-class _RequestImpl implements Request {
+class _RequestImpl implements Request, FormDataBoundaryGetter {
   final Body _body;
   final String _method;
+
+  @override
+  String? get formDataBoundary => switch (_body) {
+        FormDataBoundaryGetter(formDataBoundary: final boundary) => boundary,
+        _ => FormDataBoundaryGetter.getBoundaryFromContentType(
+            headers.get('content-type')),
+      };
 
   const _RequestImpl._(
     this.url, {
@@ -125,7 +132,18 @@ class _RequestImpl implements Request {
 
   @override
   Request clone() {
-    // TODO: implement clone
-    throw UnimplementedError();
+    return _RequestImpl._(
+      url,
+      body: _body.clone(),
+      cache: cache,
+      credentials: credentials,
+      destination: destination,
+      integrity: integrity,
+      method: method,
+      mode: mode,
+      redirect: redirect,
+      referrer: referrer,
+      referrerPolicy: referrerPolicy,
+    );
   }
 }

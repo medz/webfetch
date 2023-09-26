@@ -14,5 +14,6 @@ void main() async {
     body: fromData,
   );
 
+  print(await request.clone().text());
   print(await request.text());
 }

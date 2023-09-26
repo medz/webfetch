@@ -9,4 +9,5 @@ const request = new Request('http://localhost:3000', {
   body: form,
 });
 
+console.log(await request.clone().text());
 console.log(await request.text());

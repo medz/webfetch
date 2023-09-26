@@ -61,13 +61,13 @@ class Blob {
   Future<Uint8List> arrayBuffer() async {
     if (_buffer is Uint8List) return _buffer!;
 
-    final completer = Completer<Uint8List>();
     final chunks = <Uint8List>[];
-
     await _stream.forEach(chunks.add);
 
     _buffer =
         Uint8List.fromList(chunks.expand((e) => e).toList(growable: false));
+
+    final completer = Completer<Uint8List>();
     completer.complete(_buffer);
 
     return completer.future;

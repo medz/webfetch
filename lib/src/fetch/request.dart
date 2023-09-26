@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import '../file/blob.dart';
 import '../url/url.dart';
 import '_internal/body.dart';
+import '_internal/formdata_boundary_getter.dart';
 import 'formdata.dart';
 import 'headers.dart';
 import 'referrer_policy.dart';
