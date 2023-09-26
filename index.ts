@@ -1,9 +1,12 @@
-FormData;
-
 const form = new FormData();
-form.append('name', 'John');
-form.append('name', 'Seven');
+form.append('a', '1');
+form.append('b', '2');
 
-for (const key of form.keys()) {
-  console.log(key);
-}
+const blob = new Blob(['Hello, world!']);
+form.append('file', blob, 'hello.txt');
+
+const request = new Request('http://localhost:3000', {
+  body: form,
+});
+
+console.log(await request.text());

@@ -70,7 +70,8 @@ class FormData extends DOMIterable<FormData, String, FormDataEntryValue> {
   void append(String name, Object value, [String? filename]) {
     final FormDataEntryValue entry = switch (value) {
       final String value => FormDataEntryValueString(value),
-      final File file => FormDataEntryValueFile.fromFile(file, filename),
+      final File file =>
+        FormDataEntryValueFile.fromFile(file, filename ?? file.name),
       final Blob blob => FormDataEntryValueFile([blob], filename ?? 'Blob'),
       final FormDataEntryValue entry => entry,
       _ => throw ArgumentError.value(value, 'value', 'Unsupported type'),

@@ -8,5 +8,11 @@ void main() async {
   final blob = Blob(['Hello World']);
   fromData.append('file', blob, 'hello.txt');
 
-  print(fromData.get('file')); // John
+  final request = Request(
+    'https://httpbin.org/post',
+    method: 'POST',
+    body: fromData,
+  );
+
+  print(await request.text());
 }

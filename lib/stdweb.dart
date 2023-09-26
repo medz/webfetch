@@ -3,6 +3,13 @@ library stdweb;
 // Fetch API
 export 'src/fetch/formdata.dart';
 export 'src/fetch/headers.dart';
+export 'src/fetch/referrer_policy.dart';
+export 'src/fetch/request.dart';
+export 'src/fetch/request_cache.dart';
+export 'src/fetch/request_credentials.dart';
+export 'src/fetch/request_destination.dart';
+export 'src/fetch/request_mode.dart';
+export 'src/fetch/request_redirect.dart';
 
 // File API
 export 'src/file/blob.dart';
