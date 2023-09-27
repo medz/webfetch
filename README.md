@@ -17,9 +17,5 @@ dependencies:
 
 ## Web APIs compatibility
 
-| API  | Implementation                                                                                                                                                                                                                                                                      |
-| ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| URLs | [URL](https://developer.mozilla.org/en-US/docs/Web/API/URL) / [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams)                                                                                                                                   |
-| JSON | [JSON](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON)                                                                                                                                                                                       |
-| Blob | [Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob)                                                                                                                                                                                                                       |
-| HTTP | [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers) / [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request) / [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) / [fetch](https://developer.mozilla.org/en-US/docs/Web/API/fetch) |
+- Fetch API
+  - [fetch](https://developer.mozilla.org/en-US/docs/Web/API/fetch)
