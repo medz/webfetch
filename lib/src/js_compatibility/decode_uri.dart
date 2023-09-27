@@ -7,7 +7,7 @@ import 'uri_error.dart';
 /// - [encodedURIComponent] - A value representing an encoded URI component.
 ///
 /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent)
-decodeURIComponent(String encodedURIComponent) {
+String decodeURIComponent(String encodedURIComponent) {
   final iterator = utf8.encoder.convert(encodedURIComponent).iterator;
   final codeUnits = <int>[];
   while (iterator.moveNext()) {

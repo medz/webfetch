@@ -1,3 +1,8 @@
+## 0.0.2
+
+- Fix `decodeURIComponent` and `decodeURI` to returns type defined.
+- Fix ` Headers`` not filtering  `set-cookie`.
+
 ## 0.0.1
 
 - Add `Fetch` type.
