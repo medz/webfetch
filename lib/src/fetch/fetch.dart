@@ -16,6 +16,21 @@ import 'request_redirect.dart';
 import 'response.dart';
 import 'response_type.dart';
 
+typedef Fetch = Future<Response> Function(
+  Object resource, {
+  String? method,
+  Object? headers,
+  Object? body,
+  RequestMode? mode,
+  RequestCredentials? credentials,
+  RequestCache? cache,
+  RequestRedirect? redirect,
+  String? referrer,
+  ReferrerPolicy? referrerPolicy,
+  String? integrity,
+  bool? keepalive,
+});
+
 /// The fetch() method starts the process of fetching a resource from the network, returning a promise which is fulfilled once the response is available.
 ///
 /// [MDN Reference](https://developer.mozilla.org/en-US/docs/Web/API/fetch)
