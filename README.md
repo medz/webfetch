@@ -1,6 +1,6 @@
 # Web-standard APIs
 
-**stdweb** is a standard WEB APIs compatibility library, its purpose is to eliminate Dart-specific syntax.
+**stdweb** is a standard Web APIs compatibility library, its purpose is to eliminate Dart-specific syntax.
 
 ## Why do you need **stdweb**?
 
