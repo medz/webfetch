@@ -34,6 +34,9 @@ abstract class Headers extends DOMIterable<Headers, String, String> {
   @override
   Iterable<(String, String)> entries() sync* {
     for (final MapEntry(key: key, value: value) in _map.entries) {
+      // https://fetch.spec.whatwg.org/#ref-for-forbidden-response-header-name%E2%91%A0
+      if (key.toLowerCase() == 'set-cookie') continue;
+
       yield (key, value.join(', '));
     }
   }
