@@ -67,7 +67,7 @@ class Blob {
     _buffer =
         Uint8List.fromList(chunks.expand((e) => e).toList(growable: false));
 
-    final completer = Completer<Uint8List>();
+    final completer = Completer<Uint8List>.sync();
     completer.complete(_buffer);
 
     return completer.future;

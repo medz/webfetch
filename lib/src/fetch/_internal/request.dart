@@ -71,7 +71,8 @@ final class _RequestImpl implements Request, FormDataBoundaryGetter {
       method: method ?? 'GET',
       mode: mode ?? RequestMode.noCors,
       redirect: redirect ?? RequestRedirect.follow,
-      referrer: referrer ?? 'about:client',
+      referrer: referrer ??
+          (credentials == RequestCredentials.sameOrigin ? 'about:client' : ''),
       referrerPolicy: referrerPolicy ?? ReferrerPolicy.default_,
     );
   }

@@ -15,6 +15,16 @@ part '_internal/response.dart';
 ///
 /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response)
 abstract interface class Response implements Body {
+  /// Internal constructor, Creates a new [Response] object.
+  factory Response.raw(
+    Body body, {
+    required int status,
+    required String statusText,
+    ResponseType type,
+    bool redirected,
+    String url,
+  }) = _Response.raw;
+
   /// Creates a new [Response] object.
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/Response)

@@ -19,7 +19,7 @@ class _Body implements Body, FormDataBoundaryGetter {
       final URLSearchParams urlSearchParams => urlSearchParams,
       final FormData formData => formData,
       final Uint8List bytes => bytes,
-      final Stream<Uint8List> stream => stream,
+      final Stream<List<int>> stream => stream,
       null => Uint8List(0),
       final Object json => JSON.stringify(json),
     };
@@ -56,6 +56,14 @@ class _Body implements Body, FormDataBoundaryGetter {
     _used = true;
   }
 
+  /// Stream to Uint8List
+  Future<Uint8List> _stream2uint8list(Stream<List<int>> stream) async {
+    final chunks = <int>[];
+    await stream.forEach(chunks.addAll);
+
+    return Uint8List.fromList(chunks);
+  }
+
   /// Returns the body buffer without checking [bodyUsed].
   Future<Uint8List> _unsafeArrayBuffer() async {
     return _buffer ??= switch (_raw) {
@@ -66,8 +74,7 @@ class _Body implements Body, FormDataBoundaryGetter {
         Uint8List.fromList(utf8.encode(urlSearchParams.toString())),
       final FormData formData =>
         await FormDataEncoder(formDataBoundary!).convert(formData),
-      final Stream<Uint8List> stream =>
-        await Blob.from(stream, size: 0).arrayBuffer(),
+      final Stream<List<int>> stream => await _stream2uint8list(stream),
       _ => Uint8List(0),
     };
   }
@@ -88,7 +95,7 @@ class _Body implements Body, FormDataBoundaryGetter {
 
   Future<Blob> _unsafeBlob() async {
     if (_raw is Blob) return _raw as Blob;
-    return Blob(await arrayBuffer(), type: headers.get('content-type'));
+    return Blob(await _unsafeArrayBuffer(), type: headers.get('content-type'));
   }
 
   @override

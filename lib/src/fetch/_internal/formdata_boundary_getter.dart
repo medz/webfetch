@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:http/src/boundary_characters.dart';
 
 const _max = 70; // 70 characters is the max length according to RFC 2046
-const _prefix = 'dart-stdweb-boundary-';
+const _prefix = 'stdweb-fetch-boundary-';
 
 abstract interface class FormDataBoundaryGetter {
   /// Get the form data boundary.
