@@ -1,6 +1,6 @@
 part of '../request.dart';
 
-class _RequestImpl implements Request, FormDataBoundaryGetter {
+final class _RequestImpl implements Request, FormDataBoundaryGetter {
   final Body _body;
   final String _method;
 
