@@ -29,14 +29,10 @@ dependencies:
 
 ### URLs
 
-| API                                                                                                                       | Status |
-| ------------------------------------------------------------------------------------------------------------------------- | ------ |
-| [URL](https://developer.mozilla.org/en-US/docs/Web/API/URL)                                                               | ✅     |
-| [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams)                                       | ✅     |
-| [encodeURIComponent](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) | ✅     |
-| [decodeURIComponent](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent) | ✅     |
-| [encodeURI](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)                   | ✅     |
-| [decodeURI](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI)                   | ✅     |
+| API                                                                                 | Status |
+| ----------------------------------------------------------------------------------- | ------ |
+| [URL](https://developer.mozilla.org/en-US/docs/Web/API/URL)                         | ✅     |
+| [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) | ✅     |
 
 ### File
 
@@ -50,3 +46,60 @@ dependencies:
 | API                                                                                           | Status |
 | --------------------------------------------------------------------------------------------- | ------ |
 | [JSON](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON) | ✅     |
+
+### Encoding and decoding
+
+| API                                                                                                                       | Status |
+| ------------------------------------------------------------------------------------------------------------------------- | ------ |
+| [encodeURIComponent](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) | ✅     |
+| [decodeURIComponent](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent) | ✅     |
+| [encodeURI](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)                   | ✅     |
+| [decodeURI](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI)                   | ✅     |
+| [atob](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/atob)                                   | ❌     |
+| [btoa](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/btoa)                                   | ❌     |
+| [TextEncoder](https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder)                                               | ❌     |
+| [TextDecoder](https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder)                                               | ❌     |
+
+### Timeout and interval
+
+| API                                                                             | Status |
+| ------------------------------------------------------------------------------- | ------ |
+| [setTimeout](https://developer.mozilla.org/en-US/docs/Web/API/setTimeout)       | ❌     |
+| [clearTimeout](https://developer.mozilla.org/en-US/docs/Web/API/clearTimeout)   | ❌     |
+| [setInterval](https://developer.mozilla.org/en-US/docs/Web/API/setInterval)     | ❌     |
+| [clearInterval](https://developer.mozilla.org/en-US/docs/Web/API/clearInterval) | ❌     |
+
+### Crypto
+
+| API                                                                           | Status |
+| ----------------------------------------------------------------------------- | ------ |
+| [crypto](https://developer.mozilla.org/en-US/docs/Web/API/Crypto)             | ❌     |
+| [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto) | ❌     |
+| [CryptoKey](https://developer.mozilla.org/en-US/docs/Web/API/CryptoKey)       | ❌     |
+
+### Debugging
+
+| API                                                                         | Status |
+| --------------------------------------------------------------------------- | ------ |
+| [console](https://developer.mozilla.org/en-US/docs/Web/API/console)         | ❌     |
+| [performance](https://developer.mozilla.org/en-US/docs/Web/API/Performance) | ❌     |
+
+### User interaction
+
+| API                                                                        | Status |
+| -------------------------------------------------------------------------- | ------ |
+| [alert](https://developer.mozilla.org/en-US/docs/Web/API/Window/alert)     | ❌     |
+| [confirm](https://developer.mozilla.org/en-US/docs/Web/API/Window/confirm) | ❌     |
+| [prompt](https://developer.mozilla.org/en-US/docs/Web/API/Window/prompt)   | ❌     |
+
+## TODO
+
+- [ ] User interaction
+- [ ] Crypto
+- [ ] Debugging
+- [ ] Timeout and interval
+- [ ] Encoding and decoding
+  - [ ] atob
+  - [ ] btoa
+  - [ ] TextEncoder
+  - [ ] TextDecoder
