@@ -1,3 +1,7 @@
+## 0.0.3
+
+- Fix `Response.json` to returns type defined.
+
 ## 0.0.2
 
 - Fix `decodeURIComponent` and `decodeURI` to returns type defined.

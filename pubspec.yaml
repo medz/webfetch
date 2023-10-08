@@ -1,6 +1,6 @@
 name: stdweb
 description: A standard Web APIs compatibility library, its purpose is to eliminate Dart-specific syntax.
-version: 0.0.2
+version: 0.0.3
 repository: https://github.com/medz/stdweb
 
 environment:
