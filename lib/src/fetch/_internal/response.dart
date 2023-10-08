@@ -36,17 +36,16 @@ final class _Response implements Response, FormDataBoundaryGetter {
     int? status,
     String? statusText,
     Object? headers,
-  }) =>
-      _Response.raw(
-        Body(
-          JSON.stringify(data),
-          headers: Headers(
-            headers ?? {'content-type': 'application/json; charset=utf-8'},
-          ),
-        ),
-        status: status ?? 200,
-        statusText: statusText ?? 'OK',
-      );
+  }) {
+    return _Response.raw(
+      Body(
+        JSON.stringify(data),
+        headers: Headers(headers)..set('content-type', 'application/json'),
+      ),
+      status: status ?? 200,
+      statusText: statusText ?? 'OK',
+    );
+  }
 
   // [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/redirect)
   factory _Response.redirect(Object url, [int status = 302]) {
