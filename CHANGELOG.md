@@ -1,3 +1,7 @@
+## 0.0.4
+
+Update http package.
+
 ## 0.0.3
 
 - Fix `Response.json` to returns type defined.
