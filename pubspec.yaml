@@ -1,7 +1,7 @@
-name: stdweb
+name: webc
 description: A standard Web APIs compatibility library, its purpose is to eliminate Dart-specific syntax.
 version: 0.0.4
-repository: https://github.com/medz/stdweb
+repository: https://github.com/medz/webc
 
 environment:
   sdk: ^3.1.2
