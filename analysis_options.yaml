@@ -22,7 +22,9 @@ include: package:lints/recommended.yaml
 # analyzer:
 #   exclude:
 #     - path/to/excluded/files/**
-
+analyzer:
+  enable-experiment:
+    - inline-class
 # For more information about the core and recommended set of lints, see
 # https://dart.dev/go/core-lints
 
