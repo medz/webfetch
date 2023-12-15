@@ -4,12 +4,13 @@ version: 0.0.4
 repository: https://github.com/medz/webc
 
 environment:
-  sdk: ^3.1.2
+  sdk: '>=3.2.0 <4.0.0'
 
 dependencies:
   collection: ^1.18.0
   http: ^1.1.0
   mime: ^1.0.4
+  web: ^0.4.0
 
 dev_dependencies:
   lints: '^3.0.0'
