@@ -1,1 +1,1 @@
-external String get lineTerminator;
+const lineTerminator = '\n';

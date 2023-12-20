@@ -43,7 +43,7 @@ abstract class Headers extends DOMIterable<Headers, String, String> {
 
   /// Executes a provided function once for each key/value pair in this Headers object.
   ///
-  /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Headers/forEach)
+  /// [MDN Reference](https://developer.mozilla.org/en-US/docs/Web/API/Headers/forEach)
   @override
   void forEach(void Function(String value, String name, Headers parent) fn) =>
       super.forEach(fn);

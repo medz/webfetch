@@ -1,5 +1,3 @@
-import 'package:stdweb/src/_internal/case_insensitive_map.dart';
-
 import '../dom/dom_iterable.dart';
 import '../file/blob.dart';
 import '../file/file.dart';

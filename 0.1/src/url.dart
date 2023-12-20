@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'url_search_params.dart';
-import '_internal/object_url.dart' as _internal;
 
 /// Uniform Resource Locator (URL) is a text string that specifies where a
 /// resource (such as a web page, image, or video) can be found on the Internet.
@@ -22,13 +21,13 @@ class URL {
   /// parameter. The URL lifetime is tied to the document in the window on which
   /// it was created. The new object URL represents the specified File object or
   /// Blob object.
-  static String createObjectURL(Object object) =>
-      _internal.createObjectURL(object);
+  // static String createObjectURL(Object object) =>
+  //     internal.createObjectURL(object);
 
   /// https://developer.mozilla.org/en-US/docs/Web/API/URL/revokeObjectURL_static
   ///
   /// Revokes an object URL previously created using URL.createObjectURL().
-  static void revokeObjectURL(String url) => _internal.revokeObjectURL(url);
+  // static void revokeObjectURL(String url) => internal.revokeObjectURL(url);
 
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URL/canParse_static)
   ///
