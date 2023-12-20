@@ -1,0 +1,1 @@
+external String get lineTerminator;
