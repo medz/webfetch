@@ -25,8 +25,7 @@ class File implements Blob {
   Future<String> text() => _blob.text();
 
   @override
-  // TODO: implement type
-  String get type => throw UnimplementedError();
+  String get type => _blob.type;
 
   /// Returns the last modified time of the file, in millisecond since the
   /// UNIX epoch (January 1st, 1970 at Midnight).
@@ -52,11 +51,11 @@ class File implements Blob {
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/File/File)
   File(
     Iterable<Object> blobParts,
-    String fileName, {
+    String filename, {
     EndingType endings = EndingType.transparent,
     String type = '',
     int? lastModified,
-  })  : name = fileName,
+  })  : name = filename,
         lastModified = lastModified ?? 0 {
     _blob = Blob(blobParts, endings: endings, type: type);
   }

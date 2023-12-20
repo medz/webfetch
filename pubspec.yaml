@@ -8,7 +8,7 @@ environment:
 
 dependencies:
   collection: ^1.18.0
-  http: ^1.1.0
+  http: ^1.1.2
   mime: ^1.0.4
   web: ^0.4.0
 

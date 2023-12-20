@@ -1,7 +1,11 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:http/src/boundary_characters.dart';
+
 import 'blob.dart';
+import 'formdata.dart';
 import 'headers.dart';
 import 'http_status.dart';
 import 'response_type.dart';
@@ -23,36 +27,89 @@ class Response {
     int? status,
     String? statusText,
     Object? headers,
-    required this.type,
+    ResponseType type = ResponseType.basic,
   }) {
     this.headers = Headers(headers);
     this[#body] = stream;
     this[#status] = status;
     this[#statusText] = statusText;
+    this[#type] = type;
   }
 
   /// Creates a new [Response] object.
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/Response)
-  // Response(
-  //   Object? body, {
-  //   int? status,
-  //   String? statusText,
-  //   Object? headers,
-  // }) {
-  //   this.headers = Headers(headers);
-  // }
+  factory Response(
+    Object? body, {
+    int? status,
+    String? statusText,
+    Object? headers,
+  }) {
+    return switch (body) {
+      Response res => Response._(res.body,
+          type: res.type,
+          headers: headers,
+          status: status,
+          statusText: statusText),
+      Stream<Uint8List> stream => Response._(stream,
+          headers: headers,
+          status: status,
+          statusText: statusText,
+          type: ResponseType.basic),
+      ArrayBuffer buffer => Response._(Stream.value(buffer.asUint8List()),
+          headers: headers,
+          status: status,
+          statusText: statusText,
+          type: ResponseType.basic),
+      Blob blob => blob.createResponse(
+          headers: headers,
+          status: status,
+          statusText: statusText,
+          type: ResponseType.basic),
+      FormData fromData => fromData.createResponse(
+          headers: headers,
+          status: status,
+          statusText: statusText,
+          type: ResponseType.basic),
+      String value => Response._(Stream.value(utf8.encode(value)),
+          headers: headers,
+          status: status,
+          statusText: statusText,
+          type: ResponseType.basic),
+      // Other types, returns json response
+      _ => Response.json(body,
+          headers: headers, status: status, statusText: statusText),
+    };
+  }
 
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/error_static)
-  // factory Response.error() ;
+  factory Response.error() {
+    return Response._(Stream.empty(),
+        status: 0, statusText: '', type: ResponseType.error);
+  }
 
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/json_static)
-  // factory Response.json(
-  //   Object? data, {
-  //   int? status,
-  //   String? statusText,
-  //   Object? headers,
-  // });
+  factory Response.json(
+    Object? data, {
+    int? status,
+    String? statusText,
+    Object? headers,
+  }) {
+    final body = utf8.encode(jsonCodec.encode(data));
+    final response = Response._(
+      Stream.value(body),
+      headers: headers,
+      status: status,
+      statusText: statusText,
+      type: ResponseType.basic,
+    );
+
+    // Set headers
+    response.headers.set('Content-Type', 'application/json; charset=utf-8');
+    response.headers.set('Content-Length', body.length.toString());
+
+    return response;
+  }
 
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/redirect_static)
   // factory Response.redirect(Object url, [int status]);
@@ -81,7 +138,8 @@ class Response {
   /// The type of the response (e.g., basic, cors).
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/type)
-  final ResponseType type;
+  ResponseType get type => this[#type];
+  set type(ResponseType value) => this[#type] = value;
 
   /// The URL of the response.
   ///
@@ -143,7 +201,16 @@ class Response {
   /// Returns a promise that resolves with a FormData representation of the response body.
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/formData)
-  Future<FormData> formData();
+  Future<FormData> formData() async {
+    throwIfBodyUsed();
+
+    final FormData? existing = this[#fromData];
+    if (existing != null) return existing;
+
+    final boundary = this[#boundary] ?? headers.multipartBoundary;
+
+    return this[#fromData] = await FormData.decode(body, boundary);
+  }
 
   /// Returns a promise that resolves with the result of parsing the response body text as JSON.
   ///
@@ -186,5 +253,109 @@ extension on Response {
     if (this[#bodyUsed]) {
       throw StateError('Body already used');
     }
+  }
+}
+
+/// Returns multiple boundary name from the given [contentType].
+extension on Headers {
+  String get multipartBoundary {
+    final contentType = get('Content-Type');
+    if (contentType == null) {
+      throw StateError('Content-Type header is not set');
+    }
+
+    final parts = contentType.split(';').map((e) => e.trim());
+    final boundaryPart = parts.firstWhereOrNull(
+      (e) => e.toLowerCase().startsWith('boundary='),
+    );
+    if (boundaryPart == null) {
+      throw StateError('Content-Type header does not contain boundary');
+    }
+
+    String boundary = boundaryPart.substring('boundary='.length).trim();
+    boundary = boundary.startsWith('"') ? boundary.substring(1) : boundary;
+    boundary = boundary.endsWith('"')
+        ? boundary.substring(0, boundary.length - 1)
+        : boundary;
+    boundary = boundary.startsWith("'") ? boundary.substring(1) : boundary;
+    boundary = boundary.endsWith("'")
+        ? boundary.substring(0, boundary.length - 1)
+        : boundary;
+    if (boundary.isEmpty) {
+      throw StateError('Boundary is empty');
+    }
+
+    return boundary;
+  }
+}
+
+extension<T> on Iterable<T> {
+  T? firstWhereOrNull(bool Function(T element) test) {
+    for (final element in this) {
+      if (test(element)) return element;
+    }
+
+    return null;
+  }
+}
+
+extension on FormData {
+  /// Creates a new [Response] object.
+  Response createResponse({
+    int? status,
+    String? statusText,
+    Object? headers,
+    ResponseType type = ResponseType.basic,
+  }) {
+    final stream = FormData.encode(this, boundary);
+    final response = Response._(
+      stream,
+      status: status,
+      statusText: statusText,
+      headers: headers,
+      type: type,
+    );
+
+    // Set headers
+    response.headers
+        .set('Content-Type', 'multipart/form-data; boundary=$boundary');
+
+    return response;
+  }
+
+  /// Generates a multipart/form-data boundary.
+  String get boundary {
+    final random = Random.secure();
+    final charCodes = List.generate(60,
+        (_) => boundaryCharacters[random.nextInt(boundaryCharacters.length)],
+        growable: false);
+
+    return '-webfetch-${String.fromCharCodes(charCodes)}';
+  }
+}
+
+extension on Blob {
+  /// Creates a new [Response] object.
+  Response createResponse({
+    int? status,
+    String? statusText,
+    Object? headers,
+    ResponseType type = ResponseType.basic,
+  }) {
+    final response = Response._(
+      stream(),
+      status: status,
+      statusText: statusText,
+      headers: headers,
+      type: type,
+    );
+
+    // Set headers
+    if (response.headers.has('Content-Type')) {
+      response.headers.set('Content-Type', this.type);
+    }
+    response.headers.set('Content-Length', size.toString());
+
+    return response;
   }
 }
