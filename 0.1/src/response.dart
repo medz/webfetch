@@ -1,9 +1,8 @@
 import 'dart:convert';
-import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:http/src/boundary_characters.dart';
-
+import '_internal/generate_boundary.dart';
+import '_internal/headers_boundary.dart';
 import 'blob.dart';
 import 'formdata.dart';
 import 'headers.dart';
@@ -256,49 +255,6 @@ extension on Response {
   }
 }
 
-/// Returns multiple boundary name from the given [contentType].
-extension on Headers {
-  String get multipartBoundary {
-    final contentType = get('Content-Type');
-    if (contentType == null) {
-      throw StateError('Content-Type header is not set');
-    }
-
-    final parts = contentType.split(';').map((e) => e.trim());
-    final boundaryPart = parts.firstWhereOrNull(
-      (e) => e.toLowerCase().startsWith('boundary='),
-    );
-    if (boundaryPart == null) {
-      throw StateError('Content-Type header does not contain boundary');
-    }
-
-    String boundary = boundaryPart.substring('boundary='.length).trim();
-    boundary = boundary.startsWith('"') ? boundary.substring(1) : boundary;
-    boundary = boundary.endsWith('"')
-        ? boundary.substring(0, boundary.length - 1)
-        : boundary;
-    boundary = boundary.startsWith("'") ? boundary.substring(1) : boundary;
-    boundary = boundary.endsWith("'")
-        ? boundary.substring(0, boundary.length - 1)
-        : boundary;
-    if (boundary.isEmpty) {
-      throw StateError('Boundary is empty');
-    }
-
-    return boundary;
-  }
-}
-
-extension<T> on Iterable<T> {
-  T? firstWhereOrNull(bool Function(T element) test) {
-    for (final element in this) {
-      if (test(element)) return element;
-    }
-
-    return null;
-  }
-}
-
 extension on FormData {
   /// Creates a new [Response] object.
   Response createResponse({
@@ -307,6 +263,7 @@ extension on FormData {
     Object? headers,
     ResponseType type = ResponseType.basic,
   }) {
+    final boundary = generateBoundary();
     final stream = FormData.encode(this, boundary);
     final response = Response._(
       stream,
@@ -321,16 +278,6 @@ extension on FormData {
         .set('Content-Type', 'multipart/form-data; boundary=$boundary');
 
     return response;
-  }
-
-  /// Generates a multipart/form-data boundary.
-  String get boundary {
-    final random = Random.secure();
-    final charCodes = List.generate(60,
-        (_) => boundaryCharacters[random.nextInt(boundaryCharacters.length)],
-        growable: false);
-
-    return '-webfetch-${String.fromCharCodes(charCodes)}';
   }
 }
 

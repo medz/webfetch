@@ -1,5 +1,5 @@
 /// HTTP status code reason phrases.
-extension HttpStatusReasonPhraseHelper on int {
+extension HttpStatusReasonPhrase on int {
   /// Returns the reason phrase for the HTTP status code.
   String get httpReasonPhrase {
     return switch (this) {
