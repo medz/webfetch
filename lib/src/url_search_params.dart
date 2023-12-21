@@ -23,8 +23,7 @@ class URLSearchParams {
       Iterable<Iterable<String>> init => init.toSearchParamsStorage().toList(),
       Map<String, String> init =>
         init.entries.map((e) => (e.key, e.value)).toList(),
-      null => [],
-      _ => throw ArgumentError.value(init, 'init', 'Invalid init value'),
+      _ => [],
     };
 
     return URLSearchParams._(storage);

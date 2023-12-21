@@ -15,6 +15,7 @@ import 'request_mode.dart';
 import 'request_redirect.dart';
 import 'types.dart';
 import 'url.dart';
+import 'url_search_params.dart';
 
 /// This Fetch API interface represents a resource request.
 ///
@@ -250,12 +251,23 @@ extension on Request {
       Blob blob => initBlob(blob),
       String string => initString(string),
       FormData fromData => initFormData(fromData),
+      URLSearchParams params => initSearchParams(params),
       null => Stream.empty(),
       _ => initJson(value),
     };
 
     _storage[#body] = stream;
     _storage[#bodyUsed] = false;
+  }
+
+  /// Initializes the [Request] body with a [URLSearchParams] object, and sets
+  /// the [Content-Type] header.
+  Stream<Uint8List> initSearchParams(URLSearchParams params) {
+    headers.set(
+        'Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+    headers.set('Content-Length', params.toString().length.toString());
+
+    return Stream.value(utf8.encode(params.toString()));
   }
 
   /// Initializes the [Request] body with a [ArrayBuffer] object, and sets the
@@ -304,17 +316,16 @@ extension on Request {
 
   /// Initializes the [Request] body with a [FormData] object, and sets the
   /// [Content-Type] header.
-  Stream<Uint8List> initFormData(FormData formData) {
+  Stream<Uint8List> initFormData(FormData formData) async* {
     headers.set('Content-Type', 'multipart/form-data; boundary=$boundary');
 
-    final length = formData.entries().map((e) => switch (e.$2) {
-          String value => utf8.encode(value).lengthInBytes,
-          Blob(size: final size) => size,
-          _ => 0,
-        });
-    headers.set('Content-Length', length.fold(0, (a, b) => a + b).toString());
+    int length = 0;
+    await for (final chunk in FormData.encode(formData, boundary)) {
+      length += chunk.lengthInBytes;
+      yield chunk;
+    }
 
-    return FormData.encode(formData, boundary);
+    headers.set('Content-Length', length.toString());
   }
 
   /// Reads boundary from the [Content-Type] header or generates a new one.

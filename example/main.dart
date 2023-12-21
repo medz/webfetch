@@ -1,4 +1,4 @@
-import 'package:stdweb/stdweb.dart';
+import 'package:webfetch/webfetch.dart';
 
 void main() async {
   final formData = FormData();
@@ -9,9 +9,10 @@ void main() async {
   formData.append('file', blob, 'hello.txt');
 
   final response = await fetch(
-    'https://webhook.site/5d37e618-9650-4a6d-bc96-612b4b7d583b',
+    'https://webhook.site/34d4401b-3c1e-4941-be2c-9a9c17cf9afe?',
     method: "POST",
     body: formData,
+    keepalive: true,
   );
 
   print(await response.text());

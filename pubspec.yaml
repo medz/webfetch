@@ -1,10 +1,10 @@
 name: webfetch
-description: A standard Web APIs compatibility library, its purpose is to eliminate Dart-specific syntax.
-version: 0.0.4
-repository: https://github.com/medz/webc
+description: A Dart implementation of the Web Fetch API that allows you to make requests and process results just like using fetch in a browser.
+version: 0.0.5
+repository: https://github.com/medz/webfetch
 
 environment:
-  sdk: '>=3.2.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   http: ^1.1.2

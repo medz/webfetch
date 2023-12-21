@@ -1,105 +1,42 @@
-# Web-standard APIs
+## Web Fetch
 
-**stdweb** is a standard Web APIs compatibility library, its purpose is to eliminate Dart-specific syntax.
+A Dart implementation of the Web Fetch API that allows you to make requests and process results just like using fetch in a browser.
 
-## Why do you need **stdweb**?
+## Features
 
-If you have experience with JavaScript applications on the web, Node.js, Bun.js or Deno runtimes, then **stdweb** will feel familiar to you. You no longer need to learn Dart's various API implementations in depth, you can start using Dart directly from the APIs we are familiar with!
+- Supports the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+- Supports the [FromData API](https://developer.mozilla.org/en-US/docs/Web/API/FormData)
+- Supports the [URL API](https://developer.mozilla.org/en-US/docs/Web/API/URL)
+- Supports the [URLSearchParams API](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams)
+- Supports the [Headers API](https://developer.mozilla.org/en-US/docs/Web/API/Headers)
+- Supports the [Response API](https://developer.mozilla.org/en-US/docs/Web/API/Response)
+- Supports the [Request API](https://developer.mozilla.org/en-US/docs/Web/API/Request)
 
-## How to use **stdweb**?
+## Usage
 
-**stdweb** is a Dart package, you can use it in your project by adding the following dependencies to your `pubspec.yaml` file:
+In your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  stdweb: latest
+  webfetch: latest
 ```
 
-## Web APIs compatibility
+In your Dart code:
 
-### HTTP
+```dart
+import 'package:webfetch/webfetch.dart';
 
-| API                                                                   | Status |
-| --------------------------------------------------------------------- | ------ |
-| [fetch](https://developer.mozilla.org/en-US/docs/Web/API/fetch)       | ✅     |
-| [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers)   | ✅     |
-| [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request)   | ✅     |
-| [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) | ✅     |
-| [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData) | ✅     |
+void main() async {
+  final response = await fetch('https://example.com');
+  final text = await response.text();
+  print(text);
+}
+```
 
-### URLs
+## Documentation
 
-| API                                                                                 | Status |
-| ----------------------------------------------------------------------------------- | ------ |
-| [URL](https://developer.mozilla.org/en-US/docs/Web/API/URL)                         | ✅     |
-| [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) | ✅     |
+The library is designed to be as close as possible to the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).
 
-### File
+## License
 
-| API                                                           | Status |
-| ------------------------------------------------------------- | ------ |
-| [Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob) | ✅     |
-| [File](https://developer.mozilla.org/en-US/docs/Web/API/File) | ✅     |
-
-### JSON
-
-| API                                                                                           | Status |
-| --------------------------------------------------------------------------------------------- | ------ |
-| [JSON](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON) | ✅     |
-
-### Encoding and decoding
-
-| API                                                                                                                       | Status |
-| ------------------------------------------------------------------------------------------------------------------------- | ------ |
-| [encodeURIComponent](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) | ✅     |
-| [decodeURIComponent](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent) | ✅     |
-| [encodeURI](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)                   | ✅     |
-| [decodeURI](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI)                   | ✅     |
-| [atob](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/atob)                                   | ❌     |
-| [btoa](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/btoa)                                   | ❌     |
-| [TextEncoder](https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder)                                               | ❌     |
-| [TextDecoder](https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder)                                               | ❌     |
-
-### Timeout and interval
-
-| API                                                                             | Status |
-| ------------------------------------------------------------------------------- | ------ |
-| [setTimeout](https://developer.mozilla.org/en-US/docs/Web/API/setTimeout)       | ❌     |
-| [clearTimeout](https://developer.mozilla.org/en-US/docs/Web/API/clearTimeout)   | ❌     |
-| [setInterval](https://developer.mozilla.org/en-US/docs/Web/API/setInterval)     | ❌     |
-| [clearInterval](https://developer.mozilla.org/en-US/docs/Web/API/clearInterval) | ❌     |
-
-### Crypto
-
-| API                                                                           | Status |
-| ----------------------------------------------------------------------------- | ------ |
-| [crypto](https://developer.mozilla.org/en-US/docs/Web/API/Crypto)             | ❌     |
-| [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto) | ❌     |
-| [CryptoKey](https://developer.mozilla.org/en-US/docs/Web/API/CryptoKey)       | ❌     |
-
-### Debugging
-
-| API                                                                         | Status |
-| --------------------------------------------------------------------------- | ------ |
-| [console](https://developer.mozilla.org/en-US/docs/Web/API/console)         | ❌     |
-| [performance](https://developer.mozilla.org/en-US/docs/Web/API/Performance) | ❌     |
-
-### User interaction
-
-| API                                                                        | Status |
-| -------------------------------------------------------------------------- | ------ |
-| [alert](https://developer.mozilla.org/en-US/docs/Web/API/Window/alert)     | ❌     |
-| [confirm](https://developer.mozilla.org/en-US/docs/Web/API/Window/confirm) | ❌     |
-| [prompt](https://developer.mozilla.org/en-US/docs/Web/API/Window/prompt)   | ❌     |
-
-## TODO
-
-- [ ] User interaction
-- [ ] Crypto
-- [ ] Debugging
-- [ ] Timeout and interval
-- [ ] Encoding and decoding
-  - [ ] atob
-  - [ ] btoa
-  - [ ] TextEncoder
-  - [ ] TextDecoder
+The MIT License (MIT). Please see [License File](LICENSE) for more information.

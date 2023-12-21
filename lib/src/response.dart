@@ -121,7 +121,8 @@ class Response {
   /// Indicates whether or not the response is the result of a redirect (that is, its URL list has more than one entry).
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/redirected)
-  bool get redirected => type == ResponseType.opaqueRedirect;
+  bool get redirected => _storage[#redirected] ?? false;
+  set redirected(bool value) => _storage[#redirected] = value;
 
   /// The status code of the response. (This will be 200 for a success).
   ///
@@ -164,7 +165,10 @@ class Response {
   /// Stores a boolean value that declares whether the body has been used in a response yet.
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/bodyUsed)
-  bool get bodyUsed => this[#bodyUsed];
+  bool get bodyUsed => switch (this[#bodyUsed]) {
+        true => true,
+        _ => false,
+      };
 
   /// The Headers object associated with the response.
   ///
@@ -183,7 +187,7 @@ class Response {
   Future<Blob> blob() async {
     throwIfBodyUsed();
 
-    final Blob? existing = this[#body];
+    final Blob? existing = this[#blob];
     if (existing != null) return existing;
 
     final chunks = <Uint8List>[];
@@ -191,7 +195,7 @@ class Response {
       chunks.add(chunk);
     }
 
-    return this[#body] = Blob(
+    return this[#blob] = Blob(
       chunks,
       type: headers.get('Content-Type') ?? 'application/octet-stream',
     );
@@ -249,7 +253,7 @@ extension on Response {
 
   /// Throws an error if the response body has already been used.
   void throwIfBodyUsed() {
-    if (this[#bodyUsed]) {
+    if (bodyUsed) {
       throw StateError('Body already used');
     }
   }
