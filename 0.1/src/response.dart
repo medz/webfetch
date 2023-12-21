@@ -144,7 +144,7 @@ class Response {
   /// The URL of the response.
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/url)
-  String get url => this[#url];
+  String get url => this[#url] ?? '';
   set url(String value) => this[#url] = value;
 
   /// A ReadableStream of the body contents.
