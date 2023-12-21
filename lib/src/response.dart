@@ -75,6 +75,11 @@ class Response {
           status: status,
           statusText: statusText,
           type: ResponseType.basic),
+      null => Response._(Stream.empty(),
+          headers: headers,
+          status: status,
+          statusText: statusText,
+          type: ResponseType.basic),
       // Other types, returns json response
       _ => Response.json(body,
           headers: headers, status: status, statusText: statusText),
@@ -111,7 +116,23 @@ class Response {
   }
 
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/redirect_static)
-  // factory Response.redirect(Object url, [int status]);
+  factory Response.redirect(Object url, [int status = 307]) {
+    assert(
+      status == 301 ||
+          status == 302 ||
+          status == 303 ||
+          status == 307 ||
+          status == 308,
+      'Invalid redirect status code, must be 301, 302, 303, 307 or 308',
+    );
+
+    return Response._(
+      Stream.empty(),
+      status: status,
+      statusText: status.httpReasonPhrase,
+      headers: {'Location': url},
+    );
+  }
 
   /// A boolean indicating whether the response was successful (status in the range 200 – 299) or not.
   ///

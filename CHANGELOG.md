@@ -1,3 +1,8 @@
+## 0.0.6
+
+- feat: Add `Response.redirect` factory constructor.
+- fix: Fix `Response` not support `null` body.
+
 ## 0.0.5
 
 A Dart implementation of the Web Fetch API that allows you to make requests and process results just like using fetch in a browser.
