@@ -1,3 +1,7 @@
+## 0.0.7
+
+It's not important to improve the rating
+
 ## 0.0.6
 
 - feat: Add `Response.redirect` factory constructor.
