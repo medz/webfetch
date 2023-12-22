@@ -1,3 +1,7 @@
+## 0.0.9
+
+- feat: `Response` support `URLSearchParams` body encoding.
+
 ## 0.0.8
 
 Fix the response properties are not set correctly.
