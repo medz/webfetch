@@ -248,6 +248,7 @@ extension on Request {
     final stream = switch (value) {
       Stream<Uint8List> stream => stream,
       ArrayBuffer buffer => initArrayBuffer(buffer),
+      TypedData data => initArrayBuffer(data.buffer),
       Blob blob => initBlob(blob),
       String string => initString(string),
       FormData fromData => initFormData(fromData),

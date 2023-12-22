@@ -1,3 +1,7 @@
+## 0.0.10
+
+- feat: Support `TypedData` body encoding request/response.
+
 ## 0.0.9
 
 - feat: `Response` support `URLSearchParams` body encoding.
