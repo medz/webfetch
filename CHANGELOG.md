@@ -1,3 +1,7 @@
+## 0.0.8
+
+Fix the response properties are not set correctly.
+
 ## 0.0.7
 
 It's not important to improve the rating

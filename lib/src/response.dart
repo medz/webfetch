@@ -29,10 +29,10 @@ class Response {
     ResponseType type = ResponseType.basic,
   }) {
     this.headers = Headers(headers);
-    this[#body] = stream;
-    this[#status] = status;
-    this[#statusText] = statusText;
-    this[#type] = type;
+    _storage[#body] = stream;
+    _storage[#status] = status;
+    _storage[#statusText] = statusText;
+    _storage[#type] = type;
   }
 
   /// Creates a new [Response] object.
@@ -142,51 +142,66 @@ class Response {
   /// Indicates whether or not the response is the result of a redirect (that is, its URL list has more than one entry).
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/redirected)
-  bool get redirected => _storage[#redirected] ?? false;
+  bool get redirected => switch (_storage[#redirected]) {
+        true => true,
+        _ => false,
+      };
   set redirected(bool value) => _storage[#redirected] = value;
 
   /// The status code of the response. (This will be 200 for a success).
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/status)
-  int get status => this[#status];
-  set status(int value) => this[#status] = value;
+  int get status => switch (_storage[#status]) {
+        int status => status,
+        _ => 200,
+      };
+  set status(int value) => _storage[#status] = value;
 
   /// The status message corresponding to the status code. (e.g., OK for 200).
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/statusText)
-  String get statusText => this[#statusText] ??= status.httpReasonPhrase;
+  String get statusText => switch (_storage[#statusText]) {
+        String statusText => statusText,
+        _ => status.httpReasonPhrase,
+      };
 
   /// The type of the response (e.g., basic, cors).
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/type)
-  ResponseType get type => this[#type];
-  set type(ResponseType value) => this[#type] = value;
+  ResponseType get type => switch (_storage[#type]) {
+        ResponseType type => type,
+        _ => ResponseType.basic,
+      };
+  set type(ResponseType value) => _storage[#type] = value;
 
   /// The URL of the response.
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/url)
-  String get url => this[#url] ?? '';
-  set url(String value) => this[#url] = value;
+  String get url => switch (_storage[#url]) {
+        String url => url,
+        _ => '',
+      };
+  set url(String value) => _storage[#url] = value;
 
   /// A ReadableStream of the body contents.
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/body)
   Stream<Uint8List> get body {
     throwIfBodyUsed();
-    this[#bodyUsed] = true;
+    _storage[#bodyUsed] = true;
 
-    return this[#body];
+    return _storage[#body];
   }
 
   set body(Stream<Uint8List> value) {
-    this[#body] = value;
-    this[#bodyUsed] = false;
+    _storage[#body] = value;
+    _storage[#bodyUsed] = false;
   }
 
   /// Stores a boolean value that declares whether the body has been used in a response yet.
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/bodyUsed)
-  bool get bodyUsed => switch (this[#bodyUsed]) {
+  bool get bodyUsed => switch (_storage[#bodyUsed]) {
         true => true,
         _ => false,
       };
@@ -208,15 +223,15 @@ class Response {
   Future<Blob> blob() async {
     throwIfBodyUsed();
 
-    final Blob? existing = this[#blob];
-    if (existing != null) return existing;
+    final existing = _storage[#blob];
+    if (existing is Blob) return existing;
 
     final chunks = <Uint8List>[];
     await for (final Uint8List chunk in body) {
       chunks.add(chunk);
     }
 
-    return this[#blob] = Blob(
+    return _storage[#blob] = Blob(
       chunks,
       type: headers.get('Content-Type') ?? 'application/octet-stream',
     );
@@ -228,12 +243,12 @@ class Response {
   Future<FormData> formData() async {
     throwIfBodyUsed();
 
-    final FormData? existing = this[#fromData];
-    if (existing != null) return existing;
+    final existing = _storage[#fromData];
+    if (existing is FormData) return existing;
 
-    final boundary = this[#boundary] ?? headers.multipartBoundary;
+    final boundary = _storage[#boundary] ?? headers.multipartBoundary;
 
-    return this[#fromData] = await FormData.decode(body, boundary);
+    return _storage[#fromData] = await FormData.decode(body, boundary);
   }
 
   /// Returns a promise that resolves with the result of parsing the response body text as JSON.
@@ -251,7 +266,8 @@ class Response {
   /// [MDN Reference](https://developer.mozilla.org/en-US/docs/Web/API/Response/clone)
   Response clone() {
     throwIfBodyUsed();
-    final stream = switch (this[#body]) {
+
+    final stream = switch (_storage[#body]) {
       Stream<Uint8List> stream when stream.isBroadcast => stream,
       Stream<Uint8List> stream => stream.asBroadcastStream(),
       _ => Stream<Uint8List>.empty(),
@@ -268,10 +284,6 @@ class Response {
 }
 
 extension on Response {
-  dynamic operator [](Symbol key) => _storage[key];
-  // Sets
-  void operator []=(Symbol key, value) => _storage[key] = value;
-
   /// Throws an error if the response body has already been used.
   void throwIfBodyUsed() {
     if (bodyUsed) {
