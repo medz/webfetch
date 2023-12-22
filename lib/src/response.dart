@@ -9,6 +9,7 @@ import 'headers.dart';
 import 'http_status.dart';
 import 'response_type.dart';
 import 'types.dart';
+import 'url_search_params.dart';
 
 /// This Fetch API interface represents the response to a request.
 ///
@@ -66,6 +67,11 @@ class Response {
           statusText: statusText,
           type: ResponseType.basic),
       FormData fromData => fromData.createResponse(
+          headers: headers,
+          status: status,
+          statusText: statusText,
+          type: ResponseType.basic),
+      URLSearchParams params => params.createResponse(
           headers: headers,
           status: status,
           statusText: statusText,
@@ -311,8 +317,8 @@ extension on FormData {
     );
 
     // Set headers
-    response.headers
-        .set('Content-Type', 'multipart/form-data; boundary=$boundary');
+    response.headers.set('Content-Type',
+        'multipart/form-data; boundary=$boundary; charset=utf-8');
 
     return response;
   }
@@ -339,6 +345,32 @@ extension on Blob {
       response.headers.set('Content-Type', this.type);
     }
     response.headers.set('Content-Length', size.toString());
+
+    return response;
+  }
+}
+
+extension on URLSearchParams {
+  /// Creates a new [Response] object.
+  Response createResponse({
+    int? status,
+    String? statusText,
+    Object? headers,
+    ResponseType type = ResponseType.basic,
+  }) {
+    final value = utf8.encode(toString());
+    final response = Response._(
+      Stream.value(value),
+      status: status,
+      statusText: statusText,
+      headers: headers,
+      type: type,
+    );
+
+    // Set headers
+    response.headers.set(
+        'Content-Type', 'application/x-www-form-urlencoded; charset=utf-8');
+    response.headers.set('Content-Length', value.lengthInBytes.toString());
 
     return response;
   }

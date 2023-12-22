@@ -116,7 +116,7 @@ class URLSearchParams {
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/toString)
   @override
   String toString() {
-    return _storage
+    return entries()
         .map((e) =>
             '${e.$1.encodeQueryComponent()}=${e.$2.encodeQueryComponent()}')
         .join('&');
