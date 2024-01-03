@@ -1,3 +1,7 @@
+## 0.0.11
+
+- **BUG**: Fix stream data conversion failure when request body is empty.
+
 ## 0.0.10
 
 - feat: Support `TypedData` body encoding request/response.
