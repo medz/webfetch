@@ -81,12 +81,12 @@ class Response {
           status: status,
           statusText: statusText,
           type: ResponseType.basic),
-      String value => Response._(Stream.value(utf8.encode(value)),
+      String value => Response._(Stream<Uint8List>.value(utf8.encode(value)),
           headers: headers,
           status: status,
           statusText: statusText,
           type: ResponseType.basic),
-      null => Response._(Stream.empty(),
+      null => Response._(Stream<Uint8List>.empty(),
           headers: headers,
           status: status,
           statusText: statusText,
@@ -99,7 +99,7 @@ class Response {
 
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/error_static)
   factory Response.error() {
-    return Response._(Stream.empty(),
+    return Response._(Stream<Uint8List>.empty(),
         status: 0, statusText: '', type: ResponseType.error);
   }
 
@@ -112,7 +112,7 @@ class Response {
   }) {
     final body = utf8.encode(jsonCodec.encode(data));
     final response = Response._(
-      Stream.value(body),
+      Stream<Uint8List>.value(body),
       headers: headers,
       status: status,
       statusText: statusText,
@@ -365,7 +365,7 @@ extension on URLSearchParams {
   }) {
     final value = utf8.encode(toString());
     final response = Response._(
-      Stream.value(value),
+      Stream<Uint8List>.value(value),
       status: status,
       statusText: statusText,
       headers: headers,

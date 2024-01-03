@@ -253,7 +253,7 @@ extension on Request {
       String string => initString(string),
       FormData fromData => initFormData(fromData),
       URLSearchParams params => initSearchParams(params),
-      null => Stream.empty(),
+      null => Stream<Uint8List>.empty(),
       _ => initJson(value),
     };
 
