@@ -1,3 +1,9 @@
+## 0.0.12
+
+1. Remove `http` package dependency.
+2. Support custom HTTP client.
+3. Fix `window` not found.
+
 ## 0.0.11
 
 - **BUG**: Fix stream data conversion failure when request body is empty.
