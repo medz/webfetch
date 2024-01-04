@@ -1,20 +1,13 @@
 import 'dart:convert';
 
+import '_internal/url_helpers.dart' as helpers;
 import 'url_search_params.dart';
 
 /// Uniform Resource Locator (URL) is a text string that specifies where a
 /// resource (such as a web page, image, or video) can be found on the Internet.
 ///
 /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URL)
-class URL {
-  /// Internal, Parses a URL string and returns a `Uri` object.
-  static Uri _parse(Object url, String name) => switch (url) {
-        URL(href: final url) => Uri.parse(url),
-        final String url => Uri.parse(url),
-        final Uri uri => uri,
-        _ => throw ArgumentError.value(url, name, 'Invalid URL'),
-      };
-
+class URL implements helpers.InnerURL {
   /// https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL_static
   ///
   /// Creates a DOMString containing a URL representing the object given in the
@@ -32,17 +25,8 @@ class URL {
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URL/canParse_static)
   ///
   /// Returns a Boolean indicating if the given string is a well-formed URL.
-  static bool canParse(String url) {
-    try {
-      Uri.parse(url);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  }
-
-  Uri _uri;
-  URLSearchParams _searchParams;
+  static bool canParse(Object url, [Object? base]) =>
+      helpers.canParse(url, base);
 
   /// Internal, creates a new [URL]
   URL._(this._uri) : _searchParams = URLSearchParams(_uri.queryParametersAll);
@@ -51,17 +35,10 @@ class URL {
   /// absolute URL string, or a relative URL string and a base URL string.
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL)
-  factory URL(Object url, [Object? base]) {
-    final uri = _parse(url, 'url');
-    if (base == null) return URL._(uri);
+  factory URL(Object url, [Object? base]) => URL._(helpers.parse(url, base));
 
-    final baseUri = _parse(base, 'base');
-    if (baseUri.origin.isEmpty) {
-      throw ArgumentError.value(base, 'base', 'Invalid URL');
-    }
-
-    return URL._(baseUri.resolveUri(uri));
-  }
+  Uri _uri;
+  URLSearchParams _searchParams;
 
   /// A string containing a '#' followed by the fragment identifier of the URL.
   ///

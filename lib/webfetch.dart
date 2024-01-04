@@ -1,3 +1,5 @@
+library webfetch;
+
 export 'src/blob.dart';
 export 'src/fetch.dart';
 export 'src/file.dart';
@@ -16,3 +18,6 @@ export 'src/response_type.dart';
 export 'src/types.dart';
 export 'src/url.dart';
 export 'src/url_search_params.dart';
+
+// Client
+export 'src/client/client.dart';

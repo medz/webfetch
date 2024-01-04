@@ -127,7 +127,7 @@ class Response {
   }
 
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/redirect_static)
-  factory Response.redirect(Object url, [int status = 307]) {
+  factory Response.redirect(String url, [int status = 307]) {
     assert(
       status == 301 ||
           status == 302 ||
@@ -237,13 +237,8 @@ class Response {
     final existing = _storage[#blob];
     if (existing is Blob) return existing;
 
-    final chunks = <Uint8List>[];
-    await for (final Uint8List chunk in body) {
-      chunks.add(chunk);
-    }
-
     return _storage[#blob] = Blob(
-      chunks,
+      await body.toList(),
       type: headers.get('Content-Type') ?? 'application/octet-stream',
     );
   }
