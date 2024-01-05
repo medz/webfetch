@@ -53,7 +53,7 @@ class Client implements stub.Client {
 
     // Apply `Set-Cookie`
     for (final cookie in request.headers.getSetCookie()) {
-      ioRequest.cookies.add(Cookie.fromSetCookieValue(cookie));
+      ioRequest.headers.add('set-cookie', cookie);
     }
 
     // Sets body

@@ -1,3 +1,7 @@
+# 0.0.15
+
+1. fix headers not copy `set-cookie` headers.
+
 # 0.0.14
 
 1. fix `Response` and `Request` clone failure.

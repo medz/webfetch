@@ -156,7 +156,14 @@ extension on Iterable<String> {
 }
 
 extension on Headers {
-  List<(String, String)> toStorage() => entries().toList();
+  List<(String, String)> toStorage() {
+    final storage = entries().toList();
+    for (final cookie in getSetCookie()) {
+      storage.add(('set-cookie', cookie));
+    }
+
+    return storage;
+  }
 }
 
 extension on String {
