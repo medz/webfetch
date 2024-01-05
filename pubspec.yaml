@@ -1,6 +1,6 @@
 name: webfetch
 description: A Dart implementation of the Web Fetch API that allows you to make requests and process results just like using fetch in a browser.
-version: 0.0.13
+version: 0.0.14
 repository: https://github.com/medz/webfetch
 
 environment:
