@@ -2,6 +2,7 @@
 
 1. fix `Response` and `Request` clone failure.
 2. fix that the response fully complies with [MDN Response](https://developer.mozilla.org/zh-CN/docs/Web/API/Response) conventions, and now all attributes are read-only
+3. fix request compies with [MDN Request](https://developer.mozilla.org/zh-CN/docs/Web/API/Request) conventions, and now all attributes are read-only
 
 # 0.0.13
 

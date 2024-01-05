@@ -29,19 +29,7 @@ class Request {
   final Map<Symbol, dynamic> _storage = {};
 
   /// Internal constructor for creating a [Request] object.
-  Request._({
-    this.cache = RequestCache.default_,
-    this.credentials = RequestCredentials.include,
-    this.destination = RequestDestination.default_,
-    this.integrity = '',
-    this.method = 'GET',
-    this.mode = RequestMode.cors,
-    this.redirect = RequestRedirect.follow,
-    this.referrer = 'about:client',
-    this.referrerPolicy = ReferrerPolicy.default_,
-    required this.headers,
-    required this.url,
-  });
+  Request._();
 
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Request/Request)
   factory Request(
@@ -58,35 +46,29 @@ class Request {
     Object? headers,
     Object? body,
   }) {
-    if (input is Request) {
-      return Request._(
-        url: input.url,
-        headers: headers != null ? Headers(headers) : input.headers,
-        cache: cache ?? input.cache,
-        credentials: credentials ?? input.credentials,
-        destination: destination ?? input.destination,
-        integrity: integrity ?? input.integrity,
-        method: method ?? input.method,
-        mode: mode ?? input.mode,
-        redirect: redirect ?? input.redirect,
-        referrer: referrer ?? input.referrer,
-        referrerPolicy: referrerPolicy ?? input.referrerPolicy,
-      )..initBody(body ?? input.body);
-    }
+    final base = switch (input) {
+      Request request => request,
+      _ => null,
+    };
+    final request = Request._();
 
-    return Request._(
-      url: URL(input, defaultBaseURL).toString(),
-      headers: Headers(headers),
-      cache: cache ?? RequestCache.default_,
-      credentials: credentials ?? RequestCredentials.include,
-      destination: destination ?? RequestDestination.default_,
-      integrity: integrity ?? '',
-      method: method ?? 'GET',
-      mode: mode ?? RequestMode.cors,
-      redirect: redirect ?? RequestRedirect.follow,
-      referrer: referrer ?? 'about:client',
-      referrerPolicy: referrerPolicy ?? ReferrerPolicy.default_,
-    )..initBody(body);
+    request._storage[#url] =
+        base == null ? URL(input, defaultBaseURL).toString() : base.url;
+    request._storage[#headers] =
+        (headers == null ? base?.headers : null) ?? Headers(headers);
+    request._storage[#cache] = cache ?? base?.cache;
+    request._storage[#credentials] = credentials ?? base?.credentials;
+    request._storage[#destination] = destination ?? base?.destination;
+    request._storage[#integrity] = integrity ?? base?.integrity;
+    request._storage[#method] = method ?? base?.method;
+    request._storage[#mode] = mode ?? base?.mode;
+    request._storage[#redirect] = redirect ?? base?.redirect;
+    request._storage[#referrer] = referrer ?? base?.referrer;
+    request._storage[#referrerPolicy] = referrerPolicy ?? base?.referrerPolicy;
+
+    request.initBody(body ?? base?.body);
+
+    return request;
   }
 
   /// A [Stream] of the body content.
@@ -103,62 +85,66 @@ class Request {
   /// a request yet.
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/Request/bodyUsed)
-  bool get bodyUsed => _storage[#bodyUsed] ?? false;
+  bool get bodyUsed => _storage.of(#bodyUsed, () => false);
 
   /// Contains the cache mode of the request (e.g., default, reload, no-cache).
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/Request/cache)
-  final RequestCache cache;
+  RequestCache get cache => _storage.of(#cache, () => RequestCache.default_);
 
   /// Contains the credentials of the request (e.g., omit, same-origin, include). The default is same-origin.
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials)
-  final RequestCredentials credentials;
+  RequestCredentials get credentials =>
+      _storage.of(#credentials, () => RequestCredentials.include);
 
   /// A string describing the type of content being requested.
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/Request/destination)
-  final RequestDestination destination;
+  RequestDestination get destination =>
+      _storage.of(#destination, () => RequestDestination.default_);
 
   /// Contains the associated [Headers] object of the request.
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/Request/headers)
-  final Headers headers;
+  Headers get headers => _storage.of(#headers, Headers.new);
 
   /// Returns request's subresource integrity metadata, which is a cryptographic hash of the resource being fetched. Its value consists of multiple hashes separated by whitespace. [SRI]
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Request/integrity)
-  final String integrity;
+  String get integrity => _storage.of(#integrity, () => '');
 
   /// Contains the request's method (GET, POST, etc.)
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/Request/method)
-  final String method;
+  String get method => _storage.of(#method, () => "GET");
 
   /// Contains the mode of the request (e.g., cors, no-cors, same-origin, navigate.)
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/Request/mode)
-  final RequestMode mode;
+  RequestMode get mode => _storage.of(#mode, () => RequestMode.cors);
 
   /// Contains the mode for how redirects are handled. It may be one of follow, error, or manual.
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/Request/redirect)
-  final RequestRedirect redirect;
+  RequestRedirect get redirect =>
+      _storage.of(#redirect, () => RequestRedirect.follow);
 
   /// Contains the referrer of the request (e.g., client).
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/Request/referrer)
-  final String referrer;
+  String get referrer => _storage.of(#referrer, () => 'about:client');
 
   /// Contains the referrer policy of the request (e.g., no-referrer).
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/Request/referrerPolicy)
-  final ReferrerPolicy referrerPolicy;
+  ReferrerPolicy get referrerPolicy =>
+      _storage.of(#referrerPolicy, () => ReferrerPolicy.default_);
 
   /// Contains the URL of the request.
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/Request/url)
-  final String url;
+  String get url => _storage.of(#url, () => defaultBaseURL?.toString() ?? '');
 
   /// Returns a promise that resolves with an ArrayBuffer representation of the
   /// request body.
@@ -218,19 +204,7 @@ class Request {
     _storage[#body] = copied.$1;
     _storage[#bodyUsed] = false;
 
-    return Request._(
-      url: url,
-      headers: headers,
-      cache: cache,
-      credentials: credentials,
-      destination: destination,
-      integrity: integrity,
-      method: method,
-      mode: mode,
-      redirect: redirect,
-      referrer: referrer,
-      referrerPolicy: referrerPolicy,
-    )..initBody(copied.$2);
+    return Request(this, body: copied.$2);
   }
 }
 
@@ -335,5 +309,14 @@ extension on Request {
     } catch (_) {
       return _storage[#boundary] ??= generateBoundary();
     }
+  }
+}
+
+extension on Map<Symbol, dynamic> {
+  T of<T>(Symbol key, T Function() factory) {
+    final existing = this[key];
+    if (existing is T) return existing;
+
+    return this[key] = factory();
   }
 }
