@@ -69,7 +69,7 @@ class Client implements stub.Client {
 
     final webResponse = (await _fetch(webRequest).toDart) as web.Response;
 
-    return _ReadOnlyResponse(webResponse);
+    return _InnerResponse(webResponse);
   }
 }
 
@@ -89,12 +89,12 @@ extension on web.Headers {
   }
 }
 
-class _ReadOnlyResponse implements Response {
+class _InnerResponse implements Response {
   Headers? _headers;
 
   final web.Response _webResponse;
 
-  _ReadOnlyResponse(this._webResponse);
+  _InnerResponse(this._webResponse);
 
   @override
   Stream<Uint8List> get body async* {
@@ -123,10 +123,6 @@ class _ReadOnlyResponse implements Response {
   }
 
   @override
-  set body(Stream<Uint8List> value) => throw UnsupportedError(
-      'HTTP response body is read-only and cannot be set');
-
-  @override
   Headers get headers {
     if (_headers != null) return _headers!;
 
@@ -142,22 +138,10 @@ class _ReadOnlyResponse implements Response {
   }
 
   @override
-  set headers(Headers value) => throw UnsupportedError(
-      'HTTP response headers are read-only and cannot be set');
-
-  @override
   bool get redirected => _webResponse.redirected;
 
   @override
-  set redirected(bool value) => throw UnsupportedError(
-      'HTTP response redirected flag is read-only and cannot be set');
-
-  @override
   int get status => _webResponse.status;
-
-  @override
-  set status(int value) => throw UnsupportedError(
-      'HTTP response status is read-only and cannot be set');
 
   @override
   ResponseType get type {
@@ -167,15 +151,7 @@ class _ReadOnlyResponse implements Response {
   }
 
   @override
-  set type(ResponseType value) => throw UnsupportedError(
-      'HTTP response type is read-only and cannot be set');
-
-  @override
   String get url => _webResponse.url;
-
-  @override
-  set url(String value) => throw UnsupportedError(
-      'HTTP response URL is read-only and cannot be set');
 
   @override
   Future<ArrayBuffer> arrayBuffer() async {
@@ -192,7 +168,7 @@ class _ReadOnlyResponse implements Response {
   bool get bodyUsed => _webResponse.bodyUsed;
 
   @override
-  Response clone() => _ReadOnlyResponse(_webResponse.clone());
+  Response clone() => _InnerResponse(_webResponse.clone());
 
   @override
   Future<FormData> formData() =>

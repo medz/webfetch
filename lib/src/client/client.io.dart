@@ -77,7 +77,7 @@ class Client implements stub.Client {
       statusText: ioResponse.reasonPhrase,
       headers: responseHeaders,
     );
-    final response = _OnlyReadResponse(request, innerResponse, ioResponse);
+    final response = _InnerResponse(request, innerResponse, ioResponse);
 
     if (response.redirected && request.redirect == RequestRedirect.error) {
       throw response;
@@ -129,43 +129,28 @@ extension on HttpClientRequest {
   }
 }
 
-class _OnlyReadResponse implements Response {
+class _InnerResponse implements Response {
   final Request _innerRequest;
   final Response _innerResponse;
   final HttpClientResponse _ioResponse;
 
-  const _OnlyReadResponse(
+  const _InnerResponse(
       this._innerRequest, this._innerResponse, this._ioResponse);
 
   @override
   Stream<Uint8List> get body => _innerResponse.body;
 
   @override
-  set body(Stream<Uint8List> value) => _throwReadOnlyError();
-
-  @override
   Headers get headers => _innerResponse.headers;
-
-  @override
-  set headers(Headers value) => _throwReadOnlyError();
 
   @override
   bool get redirected => _ioResponse.redirects.isNotEmpty;
 
   @override
-  set redirected(bool value) => _throwReadOnlyError();
-
-  @override
   int get status => _ioResponse.statusCode;
 
   @override
-  set status(int value) => _throwReadOnlyError();
-
-  @override
   ResponseType get type => _innerResponse.type;
-
-  @override
-  set type(ResponseType value) => _throwReadOnlyError();
 
   @override
   String get url {
@@ -176,9 +161,6 @@ class _OnlyReadResponse implements Response {
 
     return _innerRequest.url;
   }
-
-  @override
-  set url(String value) => _throwReadOnlyError();
 
   @override
   Future<ArrayBuffer> arrayBuffer() => _innerResponse.arrayBuffer();
@@ -204,12 +186,7 @@ class _OnlyReadResponse implements Response {
   @override
   Future<String> text() => _innerResponse.text();
 
-  /// Throw read-only error
-  Never _throwReadOnlyError() {
-    throw UnsupportedError('Response is read-only');
-  }
-
   @override
   Response clone() =>
-      _OnlyReadResponse(_innerRequest, _innerResponse.clone(), _ioResponse);
+      _InnerResponse(_innerRequest, _innerResponse.clone(), _ioResponse);
 }

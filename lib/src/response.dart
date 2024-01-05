@@ -31,11 +31,11 @@ class Response {
     Object? headers,
     ResponseType type = ResponseType.basic,
   }) {
-    this.headers = Headers(headers);
     _storage[#body] = stream;
     _storage[#status] = status;
     _storage[#statusText] = statusText;
     _storage[#type] = type;
+    _storage[#headers] = Headers(headers);
   }
 
   /// Creates a new [Response] object.
@@ -155,11 +155,8 @@ class Response {
   /// Indicates whether or not the response is the result of a redirect (that is, its URL list has more than one entry).
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/redirected)
-  bool get redirected => switch (_storage[#redirected]) {
-        true => true,
-        _ => false,
-      };
-  set redirected(bool value) => _storage[#redirected] = value;
+  bool get redirected =>
+      switch (_storage[#redirected]) { bool value => value, _ => false };
 
   /// The status code of the response. (This will be 200 for a success).
   ///
@@ -168,7 +165,6 @@ class Response {
         int status => status,
         _ => 200,
       };
-  set status(int value) => _storage[#status] = value;
 
   /// The status message corresponding to the status code. (e.g., OK for 200).
   ///
@@ -185,7 +181,6 @@ class Response {
         ResponseType type => type,
         _ => ResponseType.basic,
       };
-  set type(ResponseType value) => _storage[#type] = value;
 
   /// The URL of the response.
   ///
@@ -194,7 +189,6 @@ class Response {
         String url => url,
         _ => '',
       };
-  set url(String value) => _storage[#url] = value;
 
   /// A ReadableStream of the body contents.
   ///
@@ -204,11 +198,6 @@ class Response {
     _storage[#bodyUsed] = true;
 
     return _storage[#body];
-  }
-
-  set body(Stream<Uint8List> value) {
-    _storage[#body] = value;
-    _storage[#bodyUsed] = false;
   }
 
   /// Stores a boolean value that declares whether the body has been used in a response yet.
@@ -222,7 +211,10 @@ class Response {
   /// The Headers object associated with the response.
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/headers)
-  late final Headers headers;
+  Headers get headers => switch (_storage[#headers]) {
+        Headers headers => headers,
+        _ => Headers(),
+      };
 
   /// Returns a promise that resolves with an ArrayBuffer representation of the response body.
   ///
@@ -274,7 +266,9 @@ class Response {
   /// [MDN Reference](https://developer.mozilla.org/en-US/docs/Web/API/Response/clone)
   Response clone() {
     final copied = copyTwoStreams(body);
-    body = copied.$1;
+
+    _storage[#bodyUsed] = false;
+    _storage[#body] = copied.$1;
 
     return Response._(
       copied.$2,
