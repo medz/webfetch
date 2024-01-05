@@ -103,7 +103,8 @@ class _ReadOnlyResponse implements Response {
     }
 
     final reader = _webResponse.body!.getReader();
-    final read = js_util.getProperty<js_interop.JSFunction>(reader, 'read');
+    final read =
+        js_util.getProperty<js_interop.JSFunction>(reader as Object, 'read');
     for (;;) {
       final result =
           (await (read.callAsFunction() as js_interop.JSPromise).toDart)!;

@@ -4,11 +4,11 @@ version: 0.0.12
 repository: https://github.com/medz/webfetch
 
 environment:
-  sdk: ^3.0.0
+  sdk: ^3.2.0
 
 dependencies:
   mime: ^1.0.4
-  web: ^0.4.0
+  web: '>=0.3.0 <0.5.0'
 
 dev_dependencies:
   lints: ^3.0.0
