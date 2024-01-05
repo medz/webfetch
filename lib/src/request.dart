@@ -74,11 +74,11 @@ class Request {
   /// A [Stream] of the body content.
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/Request/body)
-  Stream<Uint8List> get body {
+  Stream<Uint8List>? get body {
     throwIfBodyUsed();
 
     _storage[#bodyUsed] = true;
-    return _storage[#body] ??= Stream.empty();
+    return _storage.of(#body, () => null);
   }
 
   /// Stores true or false to indicate whether or not the body has been used in
@@ -162,7 +162,7 @@ class Request {
     if (existing is Blob) return existing;
 
     final chunks = <Uint8List>[];
-    await for (final Uint8List chunk in body) {
+    await for (final Uint8List chunk in body ?? Stream.empty()) {
       chunks.add(chunk);
     }
 
@@ -181,8 +181,11 @@ class Request {
     final FormData? existing = _storage[#fromData];
     if (existing != null) return existing;
 
-    final boundary = _storage[#boundary] ?? headers.multipartBoundary;
-    return _storage[#fromData] = await FormData.decode(body, boundary);
+    return switch (body) {
+      Stream<Uint8List> stream => await FormData.decode(
+          stream, _storage[#boundary] ?? headers.multipartBoundary),
+      _ => FormData(),
+    };
   }
 
   /// Returns a promise that resolves with the result of parsing the request body as JSON.
@@ -199,12 +202,19 @@ class Request {
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/Request/clone)
   Request clone() {
-    final copied = copyTwoStreams(body);
+    Request copy(Stream<Uint8List> stream) {
+      final copied = copyTwoStreams(stream);
 
-    _storage[#body] = copied.$1;
-    _storage[#bodyUsed] = false;
+      _storage[#body] = copied.$1;
+      _storage[#bodyUsed] = false;
 
-    return Request(this, body: copied.$2);
+      return Request(this, body: copied.$2);
+    }
+
+    return switch (body) {
+      Stream<Uint8List> stream => copy(stream),
+      _ => Request(this),
+    };
   }
 }
 
@@ -226,7 +236,7 @@ extension on Request {
       String string => initString(string),
       FormData fromData => initFormData(fromData),
       URLSearchParams params => initSearchParams(params),
-      null => Stream<Uint8List>.empty(),
+      null => null,
       _ => initJson(value),
     };
 
