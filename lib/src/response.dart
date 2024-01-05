@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import '_internal/generate_boundary.dart';
 import '_internal/headers_boundary.dart';
 import '_internal/stream_helpers.dart';
+import '_internal/storage_helpers.dart';
 import 'blob.dart';
 import 'formdata.dart';
 import 'headers.dart';
@@ -25,7 +26,7 @@ class Response {
 
   /// Internal constructor.
   Response._(
-    Stream<Uint8List> stream, {
+    Stream<Uint8List>? stream, {
     int? status,
     String? statusText,
     Object? headers,
@@ -88,7 +89,7 @@ class Response {
           status: status,
           statusText: statusText,
           type: ResponseType.basic),
-      null => Response._(Stream<Uint8List>.empty(),
+      null => Response._(null,
           headers: headers,
           status: status,
           statusText: statusText,
@@ -193,11 +194,12 @@ class Response {
   /// A ReadableStream of the body contents.
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/body)
-  Stream<Uint8List> get body {
+  Stream<Uint8List>? get body {
     throwIfBodyUsed();
+
     _storage[#bodyUsed] = true;
 
-    return _storage[#body];
+    return _storage.of(#body, () => null);
   }
 
   /// Stores a boolean value that declares whether the body has been used in a response yet.
@@ -231,10 +233,13 @@ class Response {
     final existing = _storage[#blob];
     if (existing is Blob) return existing;
 
-    return _storage[#blob] = Blob(
-      await body.toList(),
-      type: headers.get('Content-Type') ?? 'application/octet-stream',
-    );
+    final chunks = <Uint8List>[];
+    await for (final Uint8List chunk in body ?? Stream.empty()) {
+      chunks.add(chunk);
+    }
+
+    return _storage[#blob] = Blob(chunks,
+        type: headers.get('Content-Type') ?? 'application/octet-stream');
   }
 
   /// Returns a promise that resolves with a FormData representation of the response body.
@@ -246,9 +251,11 @@ class Response {
     final existing = _storage[#fromData];
     if (existing is FormData) return existing;
 
-    final boundary = _storage[#boundary] ?? headers.multipartBoundary;
-
-    return _storage[#fromData] = await FormData.decode(body, boundary);
+    return switch (body) {
+      Stream<Uint8List> stream => await FormData.decode(
+          stream, _storage[#boundary] ?? headers.multipartBoundary),
+      _ => FormData(),
+    };
   }
 
   /// Returns a promise that resolves with the result of parsing the response body text as JSON.
@@ -265,18 +272,31 @@ class Response {
   ///
   /// [MDN Reference](https://developer.mozilla.org/en-US/docs/Web/API/Response/clone)
   Response clone() {
-    final copied = copyTwoStreams(body);
+    Response clone(Stream<Uint8List> stream) {
+      final copied = copyTwoStreams(stream);
 
-    _storage[#bodyUsed] = false;
-    _storage[#body] = copied.$1;
+      _storage[#bodyUsed] = false;
+      _storage[#body] = copied.$1;
 
-    return Response._(
-      copied.$2,
-      status: status,
-      statusText: statusText,
-      headers: headers,
-      type: type,
-    );
+      return Response._(
+        copied.$2,
+        status: status,
+        statusText: statusText,
+        headers: headers,
+        type: type,
+      );
+    }
+
+    return switch (body) {
+      Stream<Uint8List> stream => clone(stream),
+      _ => Response._(
+          null,
+          status: status,
+          statusText: statusText,
+          headers: headers,
+          type: type,
+        ),
+    };
   }
 }
 

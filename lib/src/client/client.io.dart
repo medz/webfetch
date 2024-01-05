@@ -138,7 +138,7 @@ class _InnerResponse implements Response {
       this._innerRequest, this._innerResponse, this._ioResponse);
 
   @override
-  Stream<Uint8List> get body => _innerResponse.body;
+  Stream<Uint8List>? get body => _innerResponse.body;
 
   @override
   Headers get headers => _innerResponse.headers;

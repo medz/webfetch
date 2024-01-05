@@ -5,6 +5,7 @@ import '_internal/default_base_url.dart';
 import '_internal/generate_boundary.dart';
 import '_internal/headers_boundary.dart';
 import '_internal/stream_helpers.dart';
+import '_internal/storage_helpers.dart';
 import 'blob.dart';
 import 'formdata.dart';
 import 'headers.dart';
@@ -319,14 +320,5 @@ extension on Request {
     } catch (_) {
       return _storage[#boundary] ??= generateBoundary();
     }
-  }
-}
-
-extension on Map<Symbol, dynamic> {
-  T of<T>(Symbol key, T Function() factory) {
-    final existing = this[key];
-    if (existing is T) return existing;
-
-    return this[key] = factory();
   }
 }
