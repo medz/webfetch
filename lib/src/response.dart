@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
 import '_internal/generate_boundary.dart';
 import '_internal/headers_boundary.dart';
+import '_internal/stream_helpers.dart';
 import 'blob.dart';
 import 'formdata.dart';
 import 'headers.dart';
@@ -271,16 +273,11 @@ class Response {
   ///
   /// [MDN Reference](https://developer.mozilla.org/en-US/docs/Web/API/Response/clone)
   Response clone() {
-    throwIfBodyUsed();
-
-    final stream = switch (_storage[#body]) {
-      Stream<Uint8List> stream when stream.isBroadcast => stream,
-      Stream<Uint8List> stream => stream.asBroadcastStream(),
-      _ => Stream<Uint8List>.empty(),
-    };
+    final copied = copyTwoStreams(body);
+    body = copied.$1;
 
     return Response._(
-      stream,
+      copied.$2,
       status: status,
       statusText: statusText,
       headers: headers,

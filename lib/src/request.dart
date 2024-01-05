@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import '_internal/default_base_url.dart';
 import '_internal/generate_boundary.dart';
 import '_internal/headers_boundary.dart';
+import '_internal/stream_helpers.dart';
 import 'blob.dart';
 import 'formdata.dart';
 import 'headers.dart';
@@ -212,12 +213,10 @@ class Request {
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/Request/clone)
   Request clone() {
-    throwIfBodyUsed();
-    final stream = switch (_storage[#body]) {
-      Stream<Uint8List> stream when stream.isBroadcast => stream,
-      Stream<Uint8List> stream => stream.asBroadcastStream(),
-      _ => Stream<Uint8List>.empty(),
-    };
+    final copied = copyTwoStreams(body);
+
+    _storage[#body] = copied.$1;
+    _storage[#bodyUsed] = false;
 
     return Request._(
       url: url,
@@ -231,7 +230,7 @@ class Request {
       redirect: redirect,
       referrer: referrer,
       referrerPolicy: referrerPolicy,
-    ).._storage[#body] = stream;
+    )..initBody(copied.$2);
   }
 }
 

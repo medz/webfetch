@@ -1,3 +1,7 @@
+# 0.0.14
+
+1. Fix `Response` and `Request` clone failure.
+
 # 0.0.13
 
 1. Fix Flutter project cannot rely on the latest version
