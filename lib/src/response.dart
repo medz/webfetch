@@ -251,6 +251,21 @@ class Response {
     final existing = _storage[#fromData];
     if (existing is FormData) return existing;
 
+    // If content-type is `application/x-www-form-urlencoded` then parse the
+    // body as URLSearchParams.
+    if (headers
+            .get('content-type')
+            ?.startsWith('application/x-www-form-urlencoded') ==
+        true) {
+      final params = URLSearchParams(await text());
+      final formData = FormData();
+      for (final (name, value) in params.entries()) {
+        formData.append(name, value);
+      }
+
+      return _storage[#fromData] = formData;
+    }
+
     return switch (body) {
       Stream<Uint8List> stream => await FormData.decode(
           stream, _storage[#boundary] ?? headers.multipartBoundary),

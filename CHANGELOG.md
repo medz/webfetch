@@ -1,6 +1,7 @@
 # 0.0.15
 
 1. fix headers not copy `set-cookie` headers.
+2. fix `Request` and `Response` fromdata parse not support `x-www-form-urlencoded` format.
 
 # 0.0.14
 

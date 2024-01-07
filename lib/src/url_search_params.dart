@@ -39,7 +39,7 @@ class URLSearchParams {
   /// query string.
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/entries)
-  Iterable<(String, String)> entries() => _storage;
+  Iterable<(String name, String value)> entries() => _storage;
 
   /// Allows iteration through all values contained in this object via a
   /// callback function.
