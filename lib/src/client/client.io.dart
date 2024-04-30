@@ -85,7 +85,9 @@ class Client implements stub.Client {
 
     return response;
   }
+}
 
+extension on Client {
   int parseContentLength(Headers headers, Blob blob) {
     if (headers.has('content-length')) {
       try {

@@ -1,3 +1,7 @@
+# 0.0.16
+
+1. fix exported `Client`.
+
 # 0.0.15
 
 1. fix headers not copy `set-cookie` headers.
