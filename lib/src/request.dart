@@ -76,9 +76,6 @@ class Request {
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/Request/body)
   Stream<Uint8List>? get body {
-    throwIfBodyUsed();
-
-    _storage[#bodyUsed] = true;
     return _storage.of(#body, () => null);
   }
 
@@ -159,6 +156,10 @@ class Request {
   ///
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/Request/blob)
   Future<Blob> blob() async {
+    throwIfBodyUsed();
+
+    _storage[#bodyUsed] = true;
+
     final existing = _storage[#blob];
     if (existing is Blob) return existing;
 
@@ -178,6 +179,8 @@ class Request {
   /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/Request/formData)
   Future<FormData> formData() async {
     throwIfBodyUsed();
+
+    _storage[#bodyUsed] = true;
 
     final FormData? existing = _storage[#fromData];
     if (existing != null) return existing;

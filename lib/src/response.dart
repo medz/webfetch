@@ -194,13 +194,7 @@ class Response {
   /// A ReadableStream of the body contents.
   ///
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/body)
-  Stream<Uint8List>? get body {
-    throwIfBodyUsed();
-
-    _storage[#bodyUsed] = true;
-
-    return _storage.of(#body, () => null);
-  }
+  Stream<Uint8List>? get body => _storage.of(#body, () => null);
 
   /// Stores a boolean value that declares whether the body has been used in a response yet.
   ///
@@ -230,6 +224,8 @@ class Response {
   Future<Blob> blob() async {
     throwIfBodyUsed();
 
+    _storage[#bodyUsed] = true;
+
     final existing = _storage[#blob];
     if (existing is Blob) return existing;
 
@@ -247,6 +243,8 @@ class Response {
   /// [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/formData)
   Future<FormData> formData() async {
     throwIfBodyUsed();
+
+    _storage[#bodyUsed] = true;
 
     final existing = _storage[#fromData];
     if (existing is FormData) return existing;

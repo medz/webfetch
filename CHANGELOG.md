@@ -1,3 +1,9 @@
+# Web Fetch v0.0.17
+
+## What's Changed
+
+* Fix the error that `body` is a stream and cannot be read repeatedly.
+
 # 0.0.16
 
 1. fix exported `Client`.
