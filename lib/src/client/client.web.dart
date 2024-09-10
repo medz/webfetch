@@ -131,7 +131,7 @@ class _InnerResponse implements Response {
         .forEach((value, name) => _headers!.append(name, value));
 
     for (final cookie in _webResponse.headers.getSetCookie().toDart) {
-      _headers!.append('set-cookie', (cookie as js_interop.JSString).toDart);
+      _headers!.append('set-cookie', cookie.toDart);
     }
 
     return _headers!;
@@ -190,6 +190,6 @@ class _InnerResponse implements Response {
   Future<String> text() async {
     final value = await _webResponse.text().toDart;
 
-    return (value as js_interop.JSString).toDart;
+    return value.toDart;
   }
 }
