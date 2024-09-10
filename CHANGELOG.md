@@ -1,8 +1,13 @@
+## v0.1.0
+
+- **deps**: Upgrade `web` package to `1.0.0` version
+- **SDK**: Upgrade Dart SDK min version to `3.4.0`
+
 # Web Fetch v0.0.17
 
 ## What's Changed
 
-* Fix the error that `body` is a stream and cannot be read repeatedly.
+- Fix the error that `body` is a stream and cannot be read repeatedly.
 
 # 0.0.16
 
