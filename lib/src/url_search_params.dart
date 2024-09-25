@@ -1,174 +1,209 @@
-import '_internal/iterable_first_where_or_null.dart';
+typedef _Part = (String, String);
 
-/// The [URLSearchParams] interface defines utility methods to work
-/// with the query string of a [URL].
-class URLSearchParams {
-  final List<(String, String)> _storage;
-
-  /// Internal constructor, to create a new instance of [URLSearchParams].
-  const URLSearchParams._(List<(String, String)> init) : _storage = init;
-
-  /// Returns a [URLSearchParams] object instance.
-  ///
-  /// The [URLSearchParams] constructor creates and returns a new
-  /// [URLSearchParams] object.
-  ///
-  /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/URLSearchParams)
-  factory URLSearchParams([init]) {
-    final List<(String, String)> storage = switch (init) {
-      URLSearchParams(_storage: final storage) => storage,
-      String init => init.toSearchParamsStorage().toList(),
-      Iterable<(String, String)> init => init.toList(),
-      Iterable<String> init => init.toSearchParamsStorage().toList(),
-      Iterable<Iterable<String>> init => init.toSearchParamsStorage().toList(),
-      Map<String, String> init =>
-        init.entries.map((e) => (e.key, e.value)).toList(),
-      _ => [],
-    };
-
-    return URLSearchParams._(storage);
-  }
-
-  /// Indicates the total number of search parameter entries.
-  ///
-  /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/size)
-  int get size => _storage.length;
-
-  /// Returns an iterator allowing iteration through all key/value pairs
-  /// contained in this object in the same order as they appear in the
-  /// query string.
-  ///
-  /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/entries)
-  Iterable<(String name, String value)> entries() => _storage;
-
-  /// Allows iteration through all values contained in this object via a
-  /// callback function.
-  ///
-  /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/forEach)
-  void forEach(
-      void Function(String name, String value, URLSearchParams searchParams)
-          callback) {
-    for (final (name, value) in _storage) {
-      callback(name, value, this);
+extension on _Part {
+  String get asSerialized {
+    final buffer = StringBuffer();
+    buffer.write(Uri.encodeQueryComponent($1));
+    if ($2.isNotEmpty) {
+      buffer.write('=');
+      buffer.write(Uri.encodeQueryComponent($2));
     }
-  }
 
-  /// Returns an `Iterable` allowing iteration through all keys of the
-  /// key/value pairs contained in this object.
-  ///
-  /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/keys)
-  Iterable<String> keys() => _storage.map((e) => e.$1);
-
-  /// Returns an iterator allowing iteration through all values of the
-  /// key/value pairs contained in this object.
-  ///
-  /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/values)
-  Iterable<String> values() => _storage.map((e) => e.$2);
-
-  /// Sorts all key/value pairs, if any, by their keys.
-  ///
-  /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/sort)
-  void sort() => _storage.sort((a, b) => a.$1.compareTo(b.$1));
-
-  /// Returns a boolean value indicating if a given parameter, or parameter
-  ///  and value pair, exists.
-  ///
-  /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/has)
-  bool has(String name, [String? value]) =>
-      _storage.any((e) => e.equalsIgnoreCase(name, value));
-
-  /// Returns the first value associated with the given search parameter.
-  ///
-  /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/get)
-  String? get(String name) =>
-      _storage.firstWhereOrNull((e) => e.equalsIgnoreCase(name))?.$2;
-
-  /// Returns all the values associated with a given search parameter.
-  ///
-  /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/getAll)
-  Iterable<String> getAll(String name) =>
-      _storage.where((e) => e.equalsIgnoreCase(name)).map((e) => e.$2);
-
-  /// Appends a specified key/value pair as a new search parameter.
-  ///
-  /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/append)
-  void append(String name, String value) => _storage.add((name, value));
-
-  /// Sets the value associated with a given search parameter to the given
-  /// value. If there are several values, the others are deleted.
-  ///
-  /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/set)
-  void set(String name, String value) {
-    delete(name);
-    _storage.add((name, value));
-  }
-
-  /// Deletes search parameters that match a name, and optional value,
-  /// from the list of all search parameters.
-  ///
-  /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/delete)
-  void delete(String name, [String? value]) {
-    _storage.removeWhere((e) => e.equalsIgnoreCase(name, value));
-  }
-
-  /// Returns a string containing a query string suitable for use in a URL.
-  ///
-  /// [MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/toString)
-  @override
-  String toString() {
-    return entries()
-        .map((e) =>
-            '${e.$1.encodeQueryComponent()}=${e.$2.encodeQueryComponent()}')
-        .join('&');
+    return buffer.toString();
   }
 }
 
 extension on String {
-  Iterable<(String, String)> toSearchParamsStorage() sync* {
-    final params = Uri.parse(this).queryParametersAll;
-    for (final MapEntry(key: name, value: values) in params.entries) {
-      yield* values.map((value) => (name, value));
+  _Part get asPart {
+    final [name, ...values] = split('=');
+    if (values.isEmpty) {
+      return (Uri.decodeQueryComponent(name), '');
+    }
+
+    final value = values.join('=');
+    return (Uri.decodeQueryComponent(name), Uri.decodeQueryComponent(value));
+  }
+}
+
+class _Inner extends Iterable<_Part> {
+  const _Inner(this.store);
+
+  final List<_Part> store;
+
+  @override
+  Iterator<_Part> get iterator => store.iterator;
+
+  @override
+  String toString() {
+    return map((e) => e.asSerialized).join('&');
+  }
+}
+
+List<_Part> _createPartsFromMap(Map<String, String> map) {
+  return map.entries.map((e) => (e.key, e.value)).toList();
+}
+
+List<_Part> _parseUrlEncoded(String value) {
+  if (value.startsWith('??')) {
+    throw FormatException('Invalid URLSearchParams, '
+        'It should not start with double question mark');
+  }
+
+  return (value.startsWith('?') ? value.substring(1) : value)
+      .split('&')
+      .map((e) => e.asPart)
+      .toList();
+}
+
+/// MDN: https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
+/// Represents a collection of URL search parameters.
+///
+/// This extension type provides functionality to manipulate and iterate over
+/// URL search parameters, implementing the [Iterable] interface for key-value pairs.
+///
+/// This class provides functionality to manipulate and iterate over URL search parameters,
+/// allowing easy access and modification of query string components.
+extension type URLSearchParams._(_Inner _) implements Iterable<_Part> {
+  /// Creates a new instance of [URLSearchParams].
+  ///
+  /// The [init] parameter can be one of the following:
+  /// - `Iterable<(String, String)>`: An iterable of key-value pairs.
+  /// - `Map<String, String>`: A map of key-value pairs.
+  /// - `String`: A URL-encoded string.
+  /// - `null`: An empty instance.
+  ///
+  /// Throws [UnsupportedError] if the [init] value is not one of the supported types.
+  factory URLSearchParams([Object? init]) {
+    final store = switch (init) {
+      Iterable<_Part> value => List<_Part>.from(value),
+      Map<String, String> value => _createPartsFromMap(value),
+      String value => _parseUrlEncoded(value),
+      null => <_Part>[],
+      _ => throw UnsupportedError(
+          'Invalid init value, Only supports URLSearchParams, String, '
+          'Map<String, String> or Iterable<${_Part.runtimeType}>'),
+    };
+    final inner = _Inner(store);
+
+    return URLSearchParams._(inner);
+  }
+
+  /// Returns the number of key-value pairs in the URL search parameters.
+  int get size => _.length;
+
+  /// Appends a new key-value pair to the URL search parameters.
+  ///
+  /// If the key already exists, the new value is appended to the existing values.
+  /// This allows multiple values to be associated with the same key.
+  void append(String name, String value) {
+    _.store.add((name, value));
+  }
+
+  /// Deletes key-value pairs with the given key from the URL search parameters.
+  ///
+  /// If [value] is provided, only pairs with matching key and value are deleted.
+  /// If [value] is omitted, all pairs with the matching key are deleted.
+  void delete(String name, [String? value]) {
+    if (value != null) {
+      return _.store.removeWhere((e) => e.$1 == name && e.$2 == value);
+    }
+
+    _.store.removeWhere((e) => e.$1 == name);
+  }
+
+  /// Returns an iterable of all key-value pairs in the URL search parameters.
+  ///
+  /// This method allows direct iteration over the parameters without modifying the underlying data.
+  Iterable<(String, String)> entries() => this;
+
+  /// Executes a provided function once for each key/value pair in the URLSearchParams.
+  ///
+  /// The callback function is called with the following arguments:
+  /// - value: The value of the current key/value pair.
+  /// - key: The key of the current key/value pair.
+  ///
+  /// Note: This method does not return a value.
+  ///
+  /// Example:
+  /// ```dart
+  /// final params = URLSearchParams('foo=1&bar=2');
+  /// params.forEach((value, key) {
+  ///   print('$key: $value');
+  /// });
+  /// ```
+  void forEach(void Function(String value, String key) callback) {
+    for (final (name, value) in this) {
+      callback(value, name);
     }
   }
 
-  bool equalsIgnoreCase(String other) => toLowerCase() == other.toLowerCase();
-
-  String encodeQueryComponent() => Uri.encodeQueryComponent(this);
-}
-
-extension on (String, String) {
-  bool equalsIgnoreCase(String name, [String? value]) {
-    if (value == null) {
-      return $1.equalsIgnoreCase(name);
+  /// Returns the first value associated with the given search parameter.
+  ///
+  /// If there are multiple values for the given parameter, only the first one is returned.
+  /// If the parameter is not found, null is returned.
+  ///
+  /// Example:
+  /// ```dart
+  /// final params = URLSearchParams('foo=1&bar=2&foo=3');
+  /// print(params.get('foo')); // Prints: 1
+  /// print(params.get('baz')); // Prints: null
+  /// ```
+  String? get(String name) {
+    for (final (key, value) in this) {
+      if (key == name) return value;
     }
 
-    return $1.equalsIgnoreCase(name) && $2 == value;
+    return null;
   }
-}
 
-extension on Iterable<String> {
-  Iterable<(String, String)> toSearchParamsStorage() {
-    return map((e) {
-      final parts = e.split('=');
-
-      if (parts.length == 1) {
-        return (parts.first, '');
-      }
-
-      return (parts.first, parts.skip(1).join('='));
-    });
+  /// Returns all values associated with the given search parameter.
+  ///
+  /// If there are multiple values for the given parameter, all of them are returned in an iterable.
+  /// If the parameter is not found, an empty iterable is returned.
+  ///
+  /// Example:
+  /// ```dart
+  /// final params = URLSearchParams('foo=1&bar=2&foo=3');
+  /// print(params.getAll('foo').toList()); // Prints: [1, 3]
+  /// print(params.getAll('bar').toList()); // Prints: [2]
+  /// print(params.getAll('baz').toList()); // Prints: []
+  /// ```
+  Iterable<String> getAll(String name) {
+    return _.store.where((e) => e.$1 == name).map((e) => e.$2);
   }
-}
 
-extension on Iterable<Iterable<String>> {
-  Iterable<(String, String)> toSearchParamsStorage() {
-    return expand((e) {
-      if (e.isEmpty) return [];
-
-      final name = e.first;
-      final values = e.skip(1);
-
-      return values.map((value) => (name, value));
-    });
+  /// Checks if the specified parameter exists in the URLSearchParams.
+  ///
+  /// Returns true if the parameter exists, false otherwise.
+  ///
+  /// Example:
+  /// ```dart
+  /// final params = URLSearchParams('foo=1&bar=2');
+  /// print(params.has('foo')); // Prints: true
+  /// print(params.has('baz')); // Prints: false
+  /// ```
+  bool has(String name) {
+    return _.store.any((e) => e.$1 == name);
   }
+
+  /// Sets the value of a given search parameter, replacing any existing values.
+  ///
+  /// If the search parameter doesn't exist, it is created.
+  void set(String name, String value) {
+    delete(name);
+    append(name, value);
+  }
+
+  /// Sorts all key/value pairs in-place, based on their keys.
+  ///
+  /// Sorting is done using a stable sorting algorithm.
+  void sort() {
+    _.store.sort((a, b) => a.$1.compareTo(b.$1));
+  }
+
+  /// Returns an iterable of all parameter names in the search params.
+  Iterable<String> keys() => map((e) => e.$1);
+
+  /// Returns an iterable of all parameter values in the search params.
+  Iterable<String> values() => map((e) => e.$2);
 }
